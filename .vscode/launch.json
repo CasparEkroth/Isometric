@@ -1,0 +1,24 @@
+{
+    "configurations": [
+        {
+            "name": "(lldb) Launch",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${SDL}/a.out",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${SDL}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "lldb",
+            "setupCommands": [
+                { 
+                    "description": "Enable pretty-printing for lldb", 
+                    "text": "settings set target.inline-breakpoint-strategy always", 
+                    "ignoreFailures": true 
+                }
+            ]
+        }
+    ],
+    "version": "2.0.0"
+}

@@ -1,0 +1,9 @@
+{
+    "files.associations": {
+        "stdio.h": "c",
+        "stdbool.h": "c",
+        "ios": "c",
+        "map.h": "c",
+        "map_maker.h": "c"
+    }
+}
