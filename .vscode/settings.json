@@ -4,6 +4,7 @@
         "stdbool.h": "c",
         "ios": "c",
         "map.h": "c",
-        "map_maker.h": "c"
+        "map_maker.h": "c",
+        "game.h": "c"
     }
 }
