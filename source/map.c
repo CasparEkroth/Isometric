@@ -18,7 +18,7 @@ Map *createMap(SDL_Renderer *pRenderer){
     }
     redeFileForMap(pMap->tileMap,pMap->mapFile,pMap->curentRoom);
     //SDL_Surface *tmpMap = IMG_Load("resources/isometric_tile.png");
-    SDL_Surface *tmpMap = IMG_Load("resources/ISO2.png");
+    SDL_Surface *tmpMap = IMG_Load("resources/ISO4.png");
     if(!tmpMap){
         fprintf(stderr,"Error creating Surface for map, %s\n",IMG_GetError());
         return NULL;
@@ -28,10 +28,10 @@ Map *createMap(SDL_Renderer *pRenderer){
     if(!pMap->pTileShet){
         fprintf(stderr,"Error creating Texture for map, %s\n",IMG_GetError());
         return NULL;
-    }
-    pMap->tileIndex[2] = (SDL_Rect){0,0,64,32}; 
-    pMap->tileIndex[1] = (SDL_Rect){0,32,64,32}; 
-    pMap->tileIndex[0] = (SDL_Rect){64*2,0,64,64}; 
+    }    
+    pMap->tileIndex[0] = (SDL_Rect){0,0,64,64}; 
+    pMap->tileIndex[1] = (SDL_Rect){64*1,0,64,64}; 
+    pMap->tileIndex[2] = (SDL_Rect){64*2,0,64,64}; 
     pMap->tileIndex[3] = (SDL_Rect){80,64,64,32}; 
     return pMap;
 }
