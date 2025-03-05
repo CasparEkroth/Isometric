@@ -8,10 +8,7 @@ int main(void){
     Game g = {0};
     //MapMaker *m = {0};
     SDL_Event event;
-    if(initialize_window(g.pInit)){
-    g.programIsRunning = true;
-    }else g.programIsRunning = false;
-
+    initGame(&g);
     while (g.programIsRunning){
         gameCycel(&g,event);
         if(g.isMakingMap){
@@ -19,15 +16,19 @@ int main(void){
         }
     }
     removing(&g);
-    close_SDL(g.pInit->pWindow,g.pInit->pRenderer);
+    close_SDL(g.pWindow,g.pRenderer);
     return 0;
 }
 
 void initGame(Game *pGame){
+    if(initialize_window(&pGame->pWindow,&pGame->pRenderer)){
+    pGame->programIsRunning = true;
+    }else pGame->programIsRunning = false;
     pGame->isMakingMap = false;
-    pGame->pMap = createMap(pGame->pInit->pRenderer);
+    pGame->pMap = createMap(pGame->pRenderer);
 }
 
 void removing(Game *pGame){
+    if(pGame->pMap->pTileShet) SDL_DestroyTexture(pGame->pMap->pTileShet);
     if(pGame->pMap) free(pGame->pMap);
 }

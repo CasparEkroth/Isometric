@@ -4,7 +4,8 @@
 #include "map.h"
 
 typedef struct{
-    Init* pInit;
+    SDL_Window* pWindow;
+    SDL_Renderer *pRenderer;
     Map* pMap;
     bool keys[SDL_NUM_SCANCODES];
     bool programIsRunning,isMakingMap;

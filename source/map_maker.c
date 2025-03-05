@@ -48,8 +48,8 @@ void maker(MapMaker *pMapMaker, Game *pGame,bool *isGameRunnig,bool *isProgramRu
         while (SDL_PollEvent(&event)){
             maker_input(pMapMaker,event,isGameRunnig,isProgramRunnig);
         }
-        maker_update(pMapMaker,pGame->pInit->pWindow);
-        maker_render(pGame->pInit->pRenderer,pMapMaker,pGame->pMap,event);
+        maker_update(pMapMaker,pGame->pWindow);
+        maker_render(pGame->pRenderer,pMapMaker,pGame->pMap,event);
     }
     saveMademap(pMapMaker);
     free(pMapMaker);

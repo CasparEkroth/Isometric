@@ -1,9 +1,9 @@
 #include "map.h"
 
-Map *createMap(SDL_Renderer *pRenderre){
+Map *createMap(SDL_Renderer *pRenderer){
     Map *pMap = malloc(sizeof(Map));
     strcpy(pMap->curentRoom,"start");
-    stpcpy(pMap->mapFile,"resourses/mapFile.txt");
+    stpcpy(pMap->mapFile,"resources/map.txt");
 
     pMap->TILE_SIZE_H = TILE_SIZE;
     pMap->TILE_SIZE_W = TILE_SIZE;
@@ -22,16 +22,16 @@ Map *createMap(SDL_Renderer *pRenderre){
         fprintf(stderr,"Error creating Surface for map, %s\n",IMG_GetError());
         return NULL;
     }
-    pMap->pTileShet = SDL_CreateTextureFromSurface(pRenderre,tmpMap);
+    pMap->pTileShet = SDL_CreateTextureFromSurface(pRenderer,tmpMap);
     SDL_FreeSurface(tmpMap);
     if(!pMap->pTileShet){
         fprintf(stderr,"Error creating Texture for map, %s\n",IMG_GetError());
         return NULL;
     }
-    pMap->tileIndex[0] = (SDL_Rect){80,80,16,16}; 
-    pMap->tileIndex[1] = (SDL_Rect){80,96,16,16}; 
-    pMap->tileIndex[2] = (SDL_Rect){80,64,16,16}; 
-    pMap->tileIndex[3] = (SDL_Rect){101,16,16,16}; 
+    pMap->tileIndex[0] = (SDL_Rect){0,0,64,32}; 
+    pMap->tileIndex[1] = (SDL_Rect){0,32,64,32}; 
+    pMap->tileIndex[2] = (SDL_Rect){80,64,64,32}; 
+    pMap->tileIndex[3] = (SDL_Rect){64,0,64,32}; 
     return pMap;
 }
 
@@ -99,6 +99,7 @@ void redeFileForMap(char tileMap[NUMMBER_OF_TILSE_Y][NUMMBER_OF_TILSE_X], char f
         }
     }
     fclose(fp);
+
 }
 
 void updatCurentMap(SDL_Rect tileRect[NUMMBER_OF_TILSE_Y][NUMMBER_OF_TILSE_X],int TILE_SIZE_W,int TILE_SIZE_H){
@@ -106,7 +107,7 @@ void updatCurentMap(SDL_Rect tileRect[NUMMBER_OF_TILSE_Y][NUMMBER_OF_TILSE_X],in
         for (int x = 0; x < NUMMBER_OF_TILSE_X; x++){
             tileRect[y][x].w = TILE_SIZE_W;
             tileRect[y][x].h = TILE_SIZE_H;     
-            tileRect[y][x].x = (x * TILE_SIZE_W);
+            tileRect[y][x].x = (x * TILE_SIZE_W);// kommer behöva fixa 
             tileRect[y][x].y = (y * TILE_SIZE_H);
         }
     }

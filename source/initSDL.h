@@ -16,13 +16,9 @@
 #define VISIBLE_WINDOW_X 20
 #define VISIBLE_WINDOW_Y 15 
 
-typedef struct{
-    SDL_Window* pWindow;
-    SDL_Renderer *pRenderer;
-}Init;
 
+bool initialize_window(SDL_Window **ppWindow, SDL_Renderer **ppRenderer);
 
-bool initialize_window(Init *pInit);
 
 void close_SDL(SDL_Window* pWindow,SDL_Renderer *pRenderer);
 
