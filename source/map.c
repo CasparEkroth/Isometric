@@ -6,14 +6,14 @@ Map *createMap(SDL_Renderer *pRenderer){
     stpcpy(pMap->mapFile,"resources/map.txt");
 
     pMap->TILE_SIZE_H = TILE_SIZE;
-    pMap->TILE_SIZE_W = TILE_SIZE;
+    pMap->TILE_SIZE_W = TILE_SIZE*2;
 
     for (int y = 0; y < NUMMBER_OF_TILSE_Y; y++){
         for (int x = 0; x < NUMMBER_OF_TILSE_X; x++){
             pMap->tileRect[y][x].w = pMap->TILE_SIZE_W;
-            pMap->tileRect[y][x].h = pMap->TILE_SIZE_H;     // fix isomtric
-            pMap->tileRect[y][x].x = (x * pMap->TILE_SIZE_W);
-            pMap->tileRect[y][x].y = (y * pMap->TILE_SIZE_H);
+            pMap->tileRect[y][x].h = pMap->TILE_SIZE_H;     // isomtric
+            pMap->tileRect[y][x].x = (int)(x - y) * ( pMap->TILE_SIZE_W/2);
+            pMap->tileRect[y][x].y = (int)(x + y) * ( pMap->TILE_SIZE_H/2);
         }
     }
     redeFileForMap(pMap->tileMap,pMap->mapFile,pMap->curentRoom);
@@ -44,7 +44,6 @@ void printMap(char tileMap[NUMMBER_OF_TILSE_Y][NUMMBER_OF_TILSE_X]){
         printf("\n");
     }
 }
-
 
 void renderTile(SDL_Renderer *pRenderer,char tile,SDL_Rect tileIndex[NUMMBER_OF_DIFFERENT_TILSE],
                 SDL_Rect tileRect,SDL_Texture *pTileShet){
@@ -99,7 +98,6 @@ void redeFileForMap(char tileMap[NUMMBER_OF_TILSE_Y][NUMMBER_OF_TILSE_X], char f
         }
     }
     fclose(fp);
-
 }
 
 void updatCurentMap(SDL_Rect tileRect[NUMMBER_OF_TILSE_Y][NUMMBER_OF_TILSE_X],int TILE_SIZE_W,int TILE_SIZE_H){

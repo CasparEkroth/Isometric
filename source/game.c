@@ -16,6 +16,7 @@ void input(SDL_Event event,Game* pGame){
         }
     }
     if(pGame->keys[SDL_SCANCODE_ESCAPE]) pGame->programIsRunning = false;
+    if(pGame->keys[SDL_SCANCODE_F]) pGame->isMakingMap = true;
 }
 
 void update(Game *pGame){
@@ -23,7 +24,10 @@ void update(Game *pGame){
 }
 
 void render(Game *pGame){
-
+    SDL_RenderClear(pGame->pRenderer);
+    renderMap(pGame->pRenderer,pGame->pMap->tileMap,pGame->pMap->tileIndex,pGame->pMap->pTileShet,
+    pGame->pMap->tileRect);
+    SDL_RenderPresent(pGame->pRenderer);
 }
 
 void gameCycel(Game *pGame,SDL_Event event){

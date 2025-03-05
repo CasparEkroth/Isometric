@@ -6,13 +6,16 @@ void initGame(Game *pGame);
 
 int main(void){
     Game g = {0};
-    //MapMaker *m = {0};
+
     SDL_Event event;
     initGame(&g);
+    printMap(g.pMap->tileMap);
     while (g.programIsRunning){
         gameCycel(&g,event);
         if(g.isMakingMap){
-
+            MapMaker *m = initMapMaker("resources/map.txt",g.pMap->TILE_SIZE_W,g.pMap->TILE_SIZE_H,"start");
+            maker(m,&g,&g.programIsRunning);
+            g.isMakingMap = false;
         }
     }
     removing(&g);

@@ -30,10 +30,10 @@ MapMaker* initMapMaker(char fileName[NAME],int tileSizeW,int tileSizeH,char rome
 bool isOnListofRom(char fileName[NAME],char romName[NAME],int *fileIndex);
 //cheks if it is a new rom and gives the fileIndex, so we can save the new rom
 
-void maker(MapMaker *pMapMaker, Game *pGame,bool *isGameRunnig,bool *isProgramRunnig);
+void maker(MapMaker *pMapMaker, Game *pGame,bool *isProgramRunnig);
 // the main funtionen that handels all of the inportent stuff
 
-void maker_input(MapMaker *pMapMaker,SDL_Event event,bool *isGameRunnig,bool *isProgramRunnig);
+void maker_input(MapMaker *pMapMaker,SDL_Event event,bool *isProgramRunnig);
 // tacks the inputs to make chenges
 
 void maker_update(MapMaker *pMapMaker,SDL_Window *pWindow);
