@@ -27,9 +27,9 @@ MapMaker* initMapMaker(char fileName[NAME],int tileSizeW,int tileSizeH,char rome
     for (int y = 0; y < NUMMBER_OF_TILSE_Y; y++){
         for (int x = 0; x < NUMMBER_OF_TILSE_X; x++){
             pMapMaker->rect_map[y][x].w = tileSizeW;
-            pMapMaker->rect_map[y][x].h = tileSizeH;
-            pMapMaker->rect_map[y][x].y = (tileSizeH*y);
-            pMapMaker->rect_map[y][x].x = (tileSizeW*x);
+            pMapMaker->rect_map[y][x].h = tileSizeH;    //isometric
+            pMapMaker->rect_map[y][x].x = (int)(x - y) * ( tileSizeW/2);
+            pMapMaker->rect_map[y][x].y = (int)(x + y) * ( tileSizeH/2);
         }
     }
     pMapMaker->zoom = 0;
@@ -42,14 +42,14 @@ MapMaker* initMapMaker(char fileName[NAME],int tileSizeW,int tileSizeH,char rome
     return pMapMaker;
 } 
 
-void maker(MapMaker *pMapMaker, Game *pGame,bool *isGameRunnig,bool *isProgramRunnig){
+void maker(MapMaker *pMapMaker, Game *pGame,bool *isProgramRunnig){
     SDL_Event event;
     while (pMapMaker->isMakingMap){
         while (SDL_PollEvent(&event)){
-            maker_input(pMapMaker,event,isGameRunnig,isProgramRunnig);
+            maker_input(pMapMaker,event,isProgramRunnig);
         }
-        maker_update(pMapMaker,pGame->pInit->pWindow);
-        maker_render(pGame->pInit->pRenderer,pMapMaker,pGame->pMap,event);
+        maker_update(pMapMaker,pGame->pWindow);
+        maker_render(pGame->pRenderer,pMapMaker,pGame->pMap,event);
     }
     saveMademap(pMapMaker);
     free(pMapMaker);
@@ -108,7 +108,7 @@ void maker_update(MapMaker *pMapMaker,SDL_Window *pWindow){
     pMapMaker->zoom = 0;
 }
 
-void maker_input(MapMaker *pMapMaker,SDL_Event event,bool *isGameRunnig,bool *isProgramRunnig){
+void maker_input(MapMaker *pMapMaker,SDL_Event event,bool *isProgramRunnig){
     SDL_ShowCursor(SDL_ENABLE);
     SDL_Point mouse;
     Uint32 mouseState = SDL_GetMouseState(&mouse.x, &mouse.y);
@@ -116,8 +116,7 @@ void maker_input(MapMaker *pMapMaker,SDL_Event event,bool *isGameRunnig,bool *is
     switch (event.type){
     case SDL_QUIT:
         pMapMaker->isMakingMap = false;
-        isGameRunnig = false;
-        isProgramRunnig = false;
+        *isProgramRunnig = false;
         break;
     case SDL_MOUSEBUTTONDOWN:
         pMapMaker->keys[event.button.state] = SDL_PRESSED;
@@ -146,8 +145,7 @@ void maker_input(MapMaker *pMapMaker,SDL_Event event,bool *isGameRunnig,bool *is
     if(mouseState)pMapMaker->map[pMapMaker->highlight_rect.y][pMapMaker->highlight_rect.x] = pMapMaker->selectedTile;
     if(pMapMaker->keys[SDL_SCANCODE_ESCAPE]){
         pMapMaker->isMakingMap = false;
-        isGameRunnig = false;
-        isProgramRunnig = false;
+        *isProgramRunnig = false;
     }
     if(pMapMaker->keys[SDL_SCANCODE_UP]) pMapMaker->mapOfset.y = SPEED;
     if(pMapMaker->keys[SDL_SCANCODE_DOWN]) pMapMaker->mapOfset.y -= SPEED;
