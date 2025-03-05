@@ -33,7 +33,8 @@ bool isOnListofRom(char fileName[NAME],char romName[NAME],int *fileIndex);
 void maker(MapMaker *pMapMaker, Game *pGame,bool *isProgramRunnig);
 // the main funtionen that handels all of the inportent stuff
 
-void maker_input(MapMaker *pMapMaker,SDL_Event event,bool *isProgramRunnig);
+void maker_input(MapMaker *pMapMaker,SDL_Event event,bool *isProgramRunnig,Game *pGame);
+
 // tacks the inputs to make chenges
 
 void maker_update(MapMaker *pMapMaker,SDL_Window *pWindow);
@@ -44,6 +45,9 @@ void maker_render(SDL_Renderer *pRendererer,MapMaker *pMapMaker,Map *pMap,SDL_Ev
 
 void saveMademap(MapMaker *pMapMaker);
 //savse the map by rewrhitning the hole thing 
+
+void resizeWindow(MapMaker *pMapMaker, Map *pMap,SDL_Window *pWindow);
+
 
 #endif
 //#######################################################################################

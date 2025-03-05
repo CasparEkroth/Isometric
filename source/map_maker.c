@@ -29,7 +29,7 @@ MapMaker* initMapMaker(char fileName[NAME],int tileSizeW,int tileSizeH,char rome
             pMapMaker->rect_map[y][x].w = tileSizeW;
             pMapMaker->rect_map[y][x].h = tileSizeH;    //isometric
             pMapMaker->rect_map[y][x].x = (int)(x - y) * ( tileSizeW/2);
-            pMapMaker->rect_map[y][x].y = (int)(x + y) * ( tileSizeH/2);
+            pMapMaker->rect_map[y][x].y = (int)(x + y) * ( tileSizeH/4);
         }
     }
     pMapMaker->zoom = 0;
@@ -46,7 +46,7 @@ void maker(MapMaker *pMapMaker, Game *pGame,bool *isProgramRunnig){
     SDL_Event event;
     while (pMapMaker->isMakingMap){
         while (SDL_PollEvent(&event)){
-            maker_input(pMapMaker,event,isProgramRunnig);
+            maker_input(pMapMaker,event,isProgramRunnig,pGame);
         }
         maker_update(pMapMaker,pGame->pWindow);
         maker_render(pGame->pRenderer,pMapMaker,pGame->pMap,event);
@@ -108,7 +108,7 @@ void maker_update(MapMaker *pMapMaker,SDL_Window *pWindow){
     pMapMaker->zoom = 0;
 }
 
-void maker_input(MapMaker *pMapMaker,SDL_Event event,bool *isProgramRunnig){
+void maker_input(MapMaker *pMapMaker,SDL_Event event,bool *isProgramRunnig,Game *pGame){
     SDL_ShowCursor(SDL_ENABLE);
     SDL_Point mouse;
     Uint32 mouseState = SDL_GetMouseState(&mouse.x, &mouse.y);
@@ -156,6 +156,14 @@ void maker_input(MapMaker *pMapMaker,SDL_Event event,bool *isProgramRunnig){
     if(pMapMaker->keys[SDL_SCANCODE_V]) pMapMaker->selectedTile = ('a'-1);
     if(pMapMaker->keys[SDL_SCANCODE_P]) pMapMaker->zoom = -1; 
     if(pMapMaker->keys[SDL_SCANCODE_M]) pMapMaker->zoom = 1; 
+    if(pMapMaker->keys[SDL_SCANCODE_P]){
+        if (SDL_GetWindowFlags(pGame->pWindow) & SDL_WINDOW_FULLSCREEN){
+            SDL_SetWindowFullscreen(pGame->pWindow, 0);  // Switch back to windowed mode
+        }else{
+            SDL_SetWindowFullscreen(pGame->pWindow, SDL_WINDOW_FULLSCREEN);  // Fullscreen mode
+        }
+        resizeWindow(pMapMaker,pGame->pMap,pGame->pWindow);
+    } 
 }
 
 void saveMademap(MapMaker *pMapMaker){
@@ -223,4 +231,14 @@ bool isOnListofRom(char fileName[NAME],char romName[NAME],int *fileIndex){
     }
     fclose(fp);
     return false;
+}
+
+void resizeWindow(MapMaker *pMapMaker, Map *pMap,SDL_Window *pWindow){
+    int width, height;
+    SDL_GetWindowSize(pWindow, &width, &height);
+    int tmp = width/VISIBLE_WINDOW_X;
+    pMap->TILE_SIZE_W = tmp;
+    int tmp1 = height/VISIBLE_WINDOW_Y;
+    pMap->TILE_SIZE_H = tmp1;
+    updatCurentMap(pMapMaker->rect_map,pMap->TILE_SIZE_W,pMap->TILE_SIZE_H);
 }

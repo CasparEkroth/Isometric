@@ -5,7 +5,7 @@ Map *createMap(SDL_Renderer *pRenderer){
     strcpy(pMap->curentRoom,"start");
     stpcpy(pMap->mapFile,"resources/map.txt");
 
-    pMap->TILE_SIZE_H = TILE_SIZE;
+    pMap->TILE_SIZE_H = TILE_SIZE*2;
     pMap->TILE_SIZE_W = TILE_SIZE*2;
 
     for (int y = 0; y < NUMMBER_OF_TILSE_Y; y++){
@@ -13,11 +13,12 @@ Map *createMap(SDL_Renderer *pRenderer){
             pMap->tileRect[y][x].w = pMap->TILE_SIZE_W;
             pMap->tileRect[y][x].h = pMap->TILE_SIZE_H;     // isomtric
             pMap->tileRect[y][x].x = (int)(x - y) * ( pMap->TILE_SIZE_W/2);
-            pMap->tileRect[y][x].y = (int)(x + y) * ( pMap->TILE_SIZE_H/2);
+            pMap->tileRect[y][x].y = (int)(x + y) * ( pMap->TILE_SIZE_H/4);
         }
     }
     redeFileForMap(pMap->tileMap,pMap->mapFile,pMap->curentRoom);
-    SDL_Surface *tmpMap = IMG_Load("resources/isometric_tile.png");
+    //SDL_Surface *tmpMap = IMG_Load("resources/isometric_tile.png");
+    SDL_Surface *tmpMap = IMG_Load("resources/ISO2.png");
     if(!tmpMap){
         fprintf(stderr,"Error creating Surface for map, %s\n",IMG_GetError());
         return NULL;
@@ -28,10 +29,10 @@ Map *createMap(SDL_Renderer *pRenderer){
         fprintf(stderr,"Error creating Texture for map, %s\n",IMG_GetError());
         return NULL;
     }
-    pMap->tileIndex[0] = (SDL_Rect){0,0,64,32}; 
+    pMap->tileIndex[2] = (SDL_Rect){0,0,64,32}; 
     pMap->tileIndex[1] = (SDL_Rect){0,32,64,32}; 
-    pMap->tileIndex[2] = (SDL_Rect){80,64,64,32}; 
-    pMap->tileIndex[3] = (SDL_Rect){64,0,64,32}; 
+    pMap->tileIndex[0] = (SDL_Rect){64*2,0,64,64}; 
+    pMap->tileIndex[3] = (SDL_Rect){80,64,64,32}; 
     return pMap;
 }
 
