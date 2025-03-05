@@ -17,3 +17,17 @@ void input(SDL_Event event,Game* pGame){
     }
     if(pGame->keys[SDL_SCANCODE_ESCAPE]) pGame->programIsRunning = false;
 }
+
+void update(Game *pGame){
+
+}
+
+void render(Game *pGame){
+
+}
+
+void gameCycel(Game *pGame,SDL_Event event){
+    input(event,pGame);
+    update(pGame);
+    render(pGame);
+}

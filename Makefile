@@ -4,8 +4,8 @@ CFLAGS=-fsanitize=address -g -c -I/opt/homebrew/include/SDL2 -I/opt/homebrew/inc
 LDFLAGS=-fsanitize=address -I/opt/homebrew/include/SDL2 -L/opt/homebrew/lib -lSDL2main -lSDL2 -lSDL2_image -lSDL2_ttf -lSDL2_mixer
 
 # File names
-OBJ=main.o initSDL.o toolSDL.o map_maker.o  #map.o player.o game.o menu.o #enemy.o
-EXEC=GameSDL
+OBJ=main.o initSDL.o toolSDL.o map_maker.o map.o game.o #player.o menu.o #enemy.o
+EXEC=Isometric
 
 # Linking
 $(EXEC): $(OBJ)
@@ -21,8 +21,8 @@ initSDL.o: source/initSDL.c
 toolSDL.o: source/toolSDL.c
 	$(CC) $(CFLAGS) source/toolSDL.c -o toolSDL.o
 
-#map.o: source/map.c
-#	$(CC) $(CFLAGS) source/map.c -o map.o
+map.o: source/map.c
+	$(CC) $(CFLAGS) source/map.c -o map.o
 
 #player.o: source/player.c
 #	$(CC) $(CFLAGS) source/player.c -o player.o
@@ -36,8 +36,8 @@ toolSDL.o: source/toolSDL.c
 map_maker.o: source/map_maker.c
 	$(CC) $(CFLAGS) source/map_maker.c -o map_maker.o
 
-#game.o: source/game.c
-#	$(CC) $(CFLAGS) source/game.c -o game.o
+game.o: source/game.c
+	$(CC) $(CFLAGS) source/game.c -o game.o
 
 # Clean binaries
 clean:

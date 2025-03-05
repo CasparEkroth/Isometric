@@ -7,12 +7,14 @@ typedef struct{
     Init* pInit;
     Map* pMap;
     bool keys[SDL_NUM_SCANCODES];
-    bool programIsRunning;
-    SDL_Texture *helloworld;
-    SDL_Rect hello;
-    TTF_Font *font;
+    bool programIsRunning,isMakingMap;
 }Game;
 
+void update(Game *pGame);
+void input(SDL_Event event,Game* pGame);
+void render(Game *pGame);
+
+void gameCycel(Game *pGame,SDL_Event event);
 
 
 #endif 
