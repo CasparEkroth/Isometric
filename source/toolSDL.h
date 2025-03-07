@@ -14,6 +14,12 @@ SDL_Texture* makeStringInToSDL_Texture(char string[NAME], TTF_Font *pFont,SDL_Re
 SDL_Rect setingSizeOfStringToRect(char string[NAME],SDL_Point startingPoint,int h,int w);
 
 
+Uint32 getPixel(SDL_Surface *surface, int x, int y);
+void RBG(SDL_Surface *surface, int x, int y);
+bool inDiamond(SDL_Rect isoRect, SDL_Point mouse);
+
+
+
 
 
 #endif

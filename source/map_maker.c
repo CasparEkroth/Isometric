@@ -29,7 +29,7 @@ MapMaker* initMapMaker(char fileName[NAME],int tileSizeW,int tileSizeH,char rome
             pMapMaker->rect_map[y][x].w = tileSizeW;
             pMapMaker->rect_map[y][x].h = tileSizeH;    //isometric
             pMapMaker->rect_map[y][x].x = (int)(x - y) * ( tileSizeW/2);
-            pMapMaker->rect_map[y][x].y = (int)(x + y) * ( tileSizeH/2);
+            pMapMaker->rect_map[y][x].y = (int)(x + y) * ( tileSizeH/4);
         }
     }
     pMapMaker->zoom = 0;
@@ -39,6 +39,7 @@ MapMaker* initMapMaker(char fileName[NAME],int tileSizeW,int tileSizeH,char rome
     pMapMaker->highlight_rect = (SDL_Point){0,0};
     pMapMaker->mapOfset = (SDL_Point){0,0};
     pMapMaker->mousePos = (SDL_Point){0,0};
+    pMapMaker->ISOofSet = (SDL_Point){0,0};
     return pMapMaker;
 } 
 
@@ -46,7 +47,7 @@ void maker(MapMaker *pMapMaker, Game *pGame,bool *isProgramRunnig){
     SDL_Event event;
     while (pMapMaker->isMakingMap){
         while (SDL_PollEvent(&event)){
-            maker_input(pMapMaker,event,isProgramRunnig);
+            maker_input(pMapMaker,event,isProgramRunnig,pGame);
         }
         maker_update(pMapMaker,pGame->pWindow);
         maker_render(pGame->pRenderer,pMapMaker,pGame->pMap,event);
@@ -79,9 +80,13 @@ void maker_render(SDL_Renderer *pRenderer,MapMaker *pMapMaker,Map *pMap,SDL_Even
         }
     }else{
         renderMap(pRenderer,pMapMaker->map,pMap->tileIndex,pMap->pTileShet,pMapMaker->rect_map);
-        SDL_SetRenderDrawColor(pRenderer, 255, 0, 0, 255);  // Red
+        //SDL_SetRenderDrawColor(pRenderer, 255, 0, 0, 255);  // Red
         if (pMapMaker->highlight_rect.x < NUMMBER_OF_TILSE_X && pMapMaker->highlight_rect.y < NUMMBER_OF_TILSE_Y) {
-            SDL_RenderDrawRect(pRenderer, &pMapMaker->rect_map[pMapMaker->highlight_rect.y][pMapMaker->highlight_rect.x]);
+            SDL_Rect tmp = pMapMaker->rect_map[pMapMaker->highlight_rect.y][pMapMaker->highlight_rect.x];
+            tmp.h = tmp.h/2;
+            //SDL_RenderDrawRect(pRenderer, &tmp);
+            SDL_RenderCopy(pRenderer,pMap->pTileShet,&pMap->tileIndex[0],
+            &pMapMaker->rect_map[pMapMaker->highlight_rect.y+pMapMaker->ISOofSet.y][pMapMaker->highlight_rect.x+pMapMaker->ISOofSet.x]);
         }
     }
     SDL_SetRenderDrawColor(pRenderer, 0, 0, 0, 255);
@@ -108,10 +113,11 @@ void maker_update(MapMaker *pMapMaker,SDL_Window *pWindow){
     pMapMaker->zoom = 0;
 }
 
-void maker_input(MapMaker *pMapMaker,SDL_Event event,bool *isProgramRunnig){
+void maker_input(MapMaker *pMapMaker,SDL_Event event,bool *isProgramRunnig,Game *pGame){
     SDL_ShowCursor(SDL_ENABLE);
     SDL_Point mouse;
     Uint32 mouseState = SDL_GetMouseState(&mouse.x, &mouse.y);
+    mouse.y -= 15;
     pMapMaker->mousePos = mouse;
     switch (event.type){
     case SDL_QUIT:
@@ -133,16 +139,23 @@ void maker_input(MapMaker *pMapMaker,SDL_Event event,bool *isProgramRunnig){
     default:
         break;
     }
+    static int ode = 0;
     for (int y = 0; y < NUMMBER_OF_TILSE_Y; y++){
         for (int x = 0; x < NUMMBER_OF_TILSE_X; x++){
-            if(pointInRect(pMapMaker->rect_map[y][x],mouse)){
-                pMapMaker->highlight_rect.x = x;
-                pMapMaker->highlight_rect.y = y;
-                break;
-            }
+            //if(++ode%2==1){
+                SDL_Rect tileBox = pMapMaker->rect_map[y][x];
+                // Instead of halving tileBox.h, do a diamond test:
+
+                if (inDiamond(tileBox, mouse)) {
+                    // That means we clicked inside tile (x,y)
+                    pMapMaker->highlight_rect.x = x;
+                    pMapMaker->highlight_rect.y = y;
+                }
+            //}
+            
         }
     }
-    if(mouseState)pMapMaker->map[pMapMaker->highlight_rect.y][pMapMaker->highlight_rect.x] = pMapMaker->selectedTile;
+    if(mouseState)pMapMaker->map[pMapMaker->highlight_rect.y+pMapMaker->ISOofSet.y][pMapMaker->highlight_rect.x+pMapMaker->ISOofSet.x] = pMapMaker->selectedTile;
     if(pMapMaker->keys[SDL_SCANCODE_ESCAPE]){
         pMapMaker->isMakingMap = false;
         *isProgramRunnig = false;
@@ -156,6 +169,14 @@ void maker_input(MapMaker *pMapMaker,SDL_Event event,bool *isProgramRunnig){
     if(pMapMaker->keys[SDL_SCANCODE_V]) pMapMaker->selectedTile = ('a'-1);
     if(pMapMaker->keys[SDL_SCANCODE_P]) pMapMaker->zoom = -1; 
     if(pMapMaker->keys[SDL_SCANCODE_M]) pMapMaker->zoom = 1; 
+    if(pMapMaker->keys[SDL_SCANCODE_P]){
+        if (SDL_GetWindowFlags(pGame->pWindow) & SDL_WINDOW_FULLSCREEN){
+            SDL_SetWindowFullscreen(pGame->pWindow, 0);  // Switch back to windowed mode
+        }else{
+            SDL_SetWindowFullscreen(pGame->pWindow, SDL_WINDOW_FULLSCREEN);  // Fullscreen mode
+        }
+        resizeWindow(pMapMaker,pGame->pMap,pGame->pWindow);
+    } 
 }
 
 void saveMademap(MapMaker *pMapMaker){
@@ -223,4 +244,14 @@ bool isOnListofRom(char fileName[NAME],char romName[NAME],int *fileIndex){
     }
     fclose(fp);
     return false;
+}
+
+void resizeWindow(MapMaker *pMapMaker, Map *pMap,SDL_Window *pWindow){
+    int width, height;
+    SDL_GetWindowSize(pWindow, &width, &height);
+    int tmp = width/VISIBLE_WINDOW_X;
+    pMap->TILE_SIZE_W = tmp;
+    int tmp1 = height/VISIBLE_WINDOW_Y;
+    pMap->TILE_SIZE_H = tmp1;
+    updatCurentMap(pMapMaker->rect_map,pMap->TILE_SIZE_W,pMap->TILE_SIZE_H);
 }
