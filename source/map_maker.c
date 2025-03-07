@@ -39,6 +39,7 @@ MapMaker* initMapMaker(char fileName[NAME],int tileSizeW,int tileSizeH,char rome
     pMapMaker->highlight_rect = (SDL_Point){0,0};
     pMapMaker->mapOfset = (SDL_Point){0,0};
     pMapMaker->mousePos = (SDL_Point){0,0};
+    pMapMaker->ISOofSet = (SDL_Point){0,0};
     return pMapMaker;
 } 
 
@@ -81,7 +82,11 @@ void maker_render(SDL_Renderer *pRenderer,MapMaker *pMapMaker,Map *pMap,SDL_Even
         renderMap(pRenderer,pMapMaker->map,pMap->tileIndex,pMap->pTileShet,pMapMaker->rect_map);
         SDL_SetRenderDrawColor(pRenderer, 255, 0, 0, 255);  // Red
         if (pMapMaker->highlight_rect.x < NUMMBER_OF_TILSE_X && pMapMaker->highlight_rect.y < NUMMBER_OF_TILSE_Y) {
-            SDL_RenderDrawRect(pRenderer, &pMapMaker->rect_map[pMapMaker->highlight_rect.y][pMapMaker->highlight_rect.x]);
+            SDL_Rect tmp = pMapMaker->rect_map[pMapMaker->highlight_rect.y][pMapMaker->highlight_rect.x];
+            tmp.h = tmp.h/2;
+            SDL_RenderDrawRect(pRenderer, &tmp);
+            SDL_RenderCopy(pRenderer,pMap->pTileShet,&pMap->tileIndex[0],
+            &pMapMaker->rect_map[pMapMaker->highlight_rect.y+pMapMaker->ISOofSet.y][pMapMaker->highlight_rect.x+pMapMaker->ISOofSet.x]);
         }
     }
     SDL_SetRenderDrawColor(pRenderer, 0, 0, 0, 255);
@@ -135,14 +140,21 @@ void maker_input(MapMaker *pMapMaker,SDL_Event event,bool *isProgramRunnig,Game 
     }
     for (int y = 0; y < NUMMBER_OF_TILSE_Y; y++){
         for (int x = 0; x < NUMMBER_OF_TILSE_X; x++){
-            if(pointInRect(pMapMaker->rect_map[y][x],mouse)){
+            SDL_Rect tmp2 = pMapMaker->rect_map[y][x];
+            tmp2.h = tmp2.h/2;
+            if(pointInRect(tmp2,mouse)){
+                SDL_Point ofSet = getISOofSet(pGame->pMap->pTileSurface,mouse.x%pGame->pMap->TILE_SIZE_W,
+                    mouse.y%(pGame->pMap->TILE_SIZE_H/2));
+                //inIsometricRect(pMapMaker->rect_map[y][x],mouse);
+                pMapMaker->ISOofSet.x = ofSet.x;
+                pMapMaker->ISOofSet.y = ofSet.y;
                 pMapMaker->highlight_rect.x = x;
                 pMapMaker->highlight_rect.y = y;
                 break;
             }
         }
     }
-    if(mouseState)pMapMaker->map[pMapMaker->highlight_rect.y][pMapMaker->highlight_rect.x] = pMapMaker->selectedTile;
+    if(mouseState)pMapMaker->map[pMapMaker->highlight_rect.y+pMapMaker->ISOofSet.y][pMapMaker->highlight_rect.x+pMapMaker->ISOofSet.x] = pMapMaker->selectedTile;
     if(pMapMaker->keys[SDL_SCANCODE_ESCAPE]){
         pMapMaker->isMakingMap = false;
         *isProgramRunnig = false;
@@ -241,4 +253,62 @@ void resizeWindow(MapMaker *pMapMaker, Map *pMap,SDL_Window *pWindow){
     int tmp1 = height/VISIBLE_WINDOW_Y;
     pMap->TILE_SIZE_H = tmp1;
     updatCurentMap(pMapMaker->rect_map,pMap->TILE_SIZE_W,pMap->TILE_SIZE_H);
+}
+
+/*
+SDL_Point inIsometricRect(SDL_Rect A,SDL_Point mouse){// 0 inuti rätt -+ fel
+    SDL_Point ofSet ={0,0};
+    if(mouse.y>=A.y+(A.h/4)){
+        if(mouse.x>=A.x+(A.w/2)){
+            if(mouse.y>=((A.y+(A.h/2))-(mouse.x*2))){
+            ofSet = (SDL_Point){1,0};
+            }else ofSet = (SDL_Point){0,0};
+        }else {
+            if(mouse.y>=((A.y+(A.h/4))+(mouse.x*2))){
+            ofSet = (SDL_Point){0,1};
+            }else ofSet = (SDL_Point){0,0};
+        }
+    }else{
+        if(mouse.x>=A.x+(A.w/2)){
+                        if(mouse.y<=((A.y)-(mouse.x*2))){
+            ofSet = (SDL_Point){0,-1};
+            }else ofSet = (SDL_Point){0,0};
+        }else{
+            if(mouse.y<=((A.y+(A.h/4))-(mouse.x*2))){
+            ofSet = (SDL_Point){-1,0};
+            }else ofSet = (SDL_Point){0,0};
+        }
+    }
+    return ofSet;
+}
+*/
+
+SDL_Point getISOofSet(SDL_Surface *surface, int x, int y){
+    // Lås ytan innan vi läser (om den inte redan är låst)
+    x=x+(3*64); 
+    if (SDL_MUSTLOCK(surface)) {
+        if (SDL_LockSurface(surface) < 0) {
+            fprintf(stderr, "Can't lock surface: %s\n", SDL_GetError());
+        }
+    }
+    
+    // Hämta själva pixelvärdet (RGBA packat i en Uint32)
+    Uint32 pixel = getPixel(surface, x, y);
+    
+    // Konvertera till R, G, B, A
+    Uint8 r, g, b, a;
+    SDL_GetRGBA(pixel, surface->format, &r, &g, &b, &a);
+
+    // Lås upp när klart
+    if (SDL_MUSTLOCK(surface)) {
+        SDL_UnlockSurface(surface);
+    }
+    SDL_Point ofSet = {0,0};
+    if(g>128 && b>128 && r>128) return ofSet;
+    printf("Pixel at (%d,%d) has RGBA = (r%u,g%u,b%u)\n", x, y, r, g, b);
+    if(r>128) ofSet =(SDL_Point){-1,0};
+    if(g>128) ofSet =(SDL_Point){0,-1};
+    if(b>128) ofSet =(SDL_Point){1,0};
+    if(g>128 && b>128) ofSet =(SDL_Point){0,1};
+    return ofSet;
 }

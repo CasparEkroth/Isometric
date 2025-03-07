@@ -13,7 +13,7 @@ typedef struct {
     int fileIdex;
     int zoom;
     SDL_Point highlight_rect,visibleWindow;
-    SDL_Point mapOfset,mousePos;
+    SDL_Point mapOfset,mousePos,ISOofSet;
     char fileName[NAME];
     char romeName[NAME];
     bool isNewRoom;
@@ -47,6 +47,8 @@ void saveMademap(MapMaker *pMapMaker);
 //savse the map by rewrhitning the hole thing 
 
 void resizeWindow(MapMaker *pMapMaker, Map *pMap,SDL_Window *pWindow);
+//SDL_Point inIsometricRect(SDL_Rect A,SDL_Point mouse);
+SDL_Point getISOofSet(SDL_Surface *surface, int x, int y);
 
 
 #endif

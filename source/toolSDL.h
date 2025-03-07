@@ -12,6 +12,7 @@ void trimWhitespace(char *str);
 
 SDL_Texture* makeStringInToSDL_Texture(char string[NAME], TTF_Font *pFont,SDL_Renderer* pRendererer);
 SDL_Rect setingSizeOfStringToRect(char string[NAME],SDL_Point startingPoint,int h,int w);
+Uint32 getPixel(SDL_Surface *surface, int x, int y);
 
 
 

@@ -18,13 +18,14 @@ Map *createMap(SDL_Renderer *pRenderer){
     }
     redeFileForMap(pMap->tileMap,pMap->mapFile,pMap->curentRoom);
     //SDL_Surface *tmpMap = IMG_Load("resources/isometric_tile.png");
-    SDL_Surface *tmpMap = IMG_Load("resources/ISO4.png");
-    if(!tmpMap){
+    //SDL_Surface *tmpMap = IMG_Load("resources/ISO5.png");
+    pMap->pTileSurface = IMG_Load("resources/ISO5.png");
+    if(!pMap->pTileSurface){
         fprintf(stderr,"Error creating Surface for map, %s\n",IMG_GetError());
         return NULL;
     }
-    pMap->pTileShet = SDL_CreateTextureFromSurface(pRenderer,tmpMap);
-    SDL_FreeSurface(tmpMap);
+    pMap->pTileShet = SDL_CreateTextureFromSurface(pRenderer,pMap->pTileSurface);
+    //SDL_FreeSurface(tmpMap);
     if(!pMap->pTileShet){
         fprintf(stderr,"Error creating Texture for map, %s\n",IMG_GetError());
         return NULL;
@@ -105,9 +106,9 @@ void updatCurentMap(SDL_Rect tileRect[NUMMBER_OF_TILSE_Y][NUMMBER_OF_TILSE_X],in
     for (int y = 0; y < NUMMBER_OF_TILSE_Y; y++){
         for (int x = 0; x < NUMMBER_OF_TILSE_X; x++){
             tileRect[y][x].w = TILE_SIZE_W;
-            tileRect[y][x].h = TILE_SIZE_H;     
-            tileRect[y][x].x = (x * TILE_SIZE_W);// kommer behöva fixa 
-            tileRect[y][x].y = (y * TILE_SIZE_H);
+            tileRect[y][x].h = TILE_SIZE_H;     // isomtric
+            tileRect[y][x].x = (int)(x - y) * (TILE_SIZE_W/2);
+            tileRect[y][x].y = (int)(x + y) * (TILE_SIZE_H/4);
         }
     }
 }
