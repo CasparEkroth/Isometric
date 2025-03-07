@@ -47,8 +47,6 @@ void saveMademap(MapMaker *pMapMaker);
 //savse the map by rewrhitning the hole thing 
 
 void resizeWindow(MapMaker *pMapMaker, Map *pMap,SDL_Window *pWindow);
-//SDL_Point inIsometricRect(SDL_Rect A,SDL_Point mouse);
-SDL_Point getISOofSet(SDL_Surface *surface, int x, int y);
 
 
 #endif

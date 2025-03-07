@@ -17,15 +17,13 @@ Map *createMap(SDL_Renderer *pRenderer){
         }
     }
     redeFileForMap(pMap->tileMap,pMap->mapFile,pMap->curentRoom);
-    //SDL_Surface *tmpMap = IMG_Load("resources/isometric_tile.png");
-    //SDL_Surface *tmpMap = IMG_Load("resources/ISO5.png");
-    pMap->pTileSurface = IMG_Load("resources/ISO5.png");
-    if(!pMap->pTileSurface){
+    SDL_Surface *tmpMap = IMG_Load("resources/ISO5.png");
+    if(!tmpMap){
         fprintf(stderr,"Error creating Surface for map, %s\n",IMG_GetError());
         return NULL;
     }
-    pMap->pTileShet = SDL_CreateTextureFromSurface(pRenderer,pMap->pTileSurface);
-    //SDL_FreeSurface(tmpMap);
+    pMap->pTileShet = SDL_CreateTextureFromSurface(pRenderer,tmpMap);
+    SDL_FreeSurface(tmpMap);
     if(!pMap->pTileShet){
         fprintf(stderr,"Error creating Texture for map, %s\n",IMG_GetError());
         return NULL;

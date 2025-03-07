@@ -32,7 +32,6 @@ void initGame(Game *pGame){
 }
 
 void removing(Game *pGame){
-    if(pGame->pMap->pTileSurface) SDL_FreeSurface(pGame->pMap->pTileSurface);
     if(pGame->pMap->pTileShet) SDL_DestroyTexture(pGame->pMap->pTileShet);
     if(pGame->pMap) free(pGame->pMap);
 }

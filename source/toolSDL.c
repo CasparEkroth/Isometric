@@ -69,3 +69,55 @@ Uint32 getPixel(SDL_Surface *surface, int x, int y) {
     }
     return 0;
 }
+
+void RBG(SDL_Surface *surface, int x, int y){
+    // Lås ytan innan vi läser (om den inte redan är låst)
+    x=x+(3*64); 
+    if (SDL_MUSTLOCK(surface)) {
+        if (SDL_LockSurface(surface) < 0) {
+            fprintf(stderr, "Can't lock surface: %s\n", SDL_GetError());
+        }
+    }
+    
+    // Hämta själva pixelvärdet (RGBA packat i en Uint32)
+    Uint32 pixel = getPixel(surface, x, y);
+    
+    // Konvertera till R, G, B, A
+    Uint8 r, g, b, a;
+    SDL_GetRGBA(pixel, surface->format, &r, &g, &b, &a);
+    printf("Pixel at (%d,%d) has RGBA = (r%u,g%u,b%u)\n", x, y, r, g, b);
+    // Lås upp när klart
+    if (SDL_MUSTLOCK(surface)) {
+        SDL_UnlockSurface(surface);
+    }
+}
+
+// Suppose 'isoRect' is the tile bounding box 
+//   isoRect.x, isoRect.y is the *top-left* of that tile’s bounding box
+//   isoRect.w, isoRect.h is the full width & height of the diamond
+//
+// We can compute the center of the diamond and do a quick diamond-shaped bounding check.
+bool inDiamond(SDL_Rect isoRect, SDL_Point mouse){
+    int halfW = isoRect.w / 2;
+    int halfH = isoRect.h / 2;
+    // Center of the isometric diamond
+    int centerX = isoRect.x + halfW;
+    int centerY = isoRect.y + halfH / 2; // because the tile’s “center” is halfway in Y
+
+    // Distance from center
+    int dx = abs(mouse.x - centerX);
+    int dy = abs(mouse.y - centerY);
+
+    // For an isometric diamond, 2*dy + dx <= halfW can be used as a quick test
+    // or you can tune the shape by adjusting halfH, etc.
+
+    // If the diamond is placed so that isoRect.h is actually twice its diamond’s “height,” 
+    // you sometimes do:  if (dx <= halfW - (dy * (halfW / halfH)) ) ...
+
+    // A commonly used approach is:
+    if (dx * (halfH) + dy * (halfW) <= halfW * halfH) {
+        return true;
+    } else {
+        return false;
+    }
+}

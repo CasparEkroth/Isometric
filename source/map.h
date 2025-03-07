@@ -12,7 +12,6 @@ typedef struct {
     int TILE_SIZE_W,TILE_SIZE_H;
     char tileMap[NUMMBER_OF_TILSE_Y][NUMMBER_OF_TILSE_X];
     SDL_Texture *pTileShet;
-    SDL_Surface *pTileSurface;
     SDL_Rect tileIndex[NUMMBER_OF_DIFFERENT_TILSE];//sprits
     SDL_Rect tileRect[NUMMBER_OF_TILSE_Y][NUMMBER_OF_TILSE_X];//pos
     char curentRoom[FILE_LENGTH];

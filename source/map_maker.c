@@ -80,11 +80,11 @@ void maker_render(SDL_Renderer *pRenderer,MapMaker *pMapMaker,Map *pMap,SDL_Even
         }
     }else{
         renderMap(pRenderer,pMapMaker->map,pMap->tileIndex,pMap->pTileShet,pMapMaker->rect_map);
-        SDL_SetRenderDrawColor(pRenderer, 255, 0, 0, 255);  // Red
+        //SDL_SetRenderDrawColor(pRenderer, 255, 0, 0, 255);  // Red
         if (pMapMaker->highlight_rect.x < NUMMBER_OF_TILSE_X && pMapMaker->highlight_rect.y < NUMMBER_OF_TILSE_Y) {
             SDL_Rect tmp = pMapMaker->rect_map[pMapMaker->highlight_rect.y][pMapMaker->highlight_rect.x];
             tmp.h = tmp.h/2;
-            SDL_RenderDrawRect(pRenderer, &tmp);
+            //SDL_RenderDrawRect(pRenderer, &tmp);
             SDL_RenderCopy(pRenderer,pMap->pTileShet,&pMap->tileIndex[0],
             &pMapMaker->rect_map[pMapMaker->highlight_rect.y+pMapMaker->ISOofSet.y][pMapMaker->highlight_rect.x+pMapMaker->ISOofSet.x]);
         }
@@ -117,6 +117,7 @@ void maker_input(MapMaker *pMapMaker,SDL_Event event,bool *isProgramRunnig,Game 
     SDL_ShowCursor(SDL_ENABLE);
     SDL_Point mouse;
     Uint32 mouseState = SDL_GetMouseState(&mouse.x, &mouse.y);
+    mouse.y -= 15;
     pMapMaker->mousePos = mouse;
     switch (event.type){
     case SDL_QUIT:
@@ -138,20 +139,20 @@ void maker_input(MapMaker *pMapMaker,SDL_Event event,bool *isProgramRunnig,Game 
     default:
         break;
     }
+    static int ode = 0;
     for (int y = 0; y < NUMMBER_OF_TILSE_Y; y++){
         for (int x = 0; x < NUMMBER_OF_TILSE_X; x++){
-            SDL_Rect tmp2 = pMapMaker->rect_map[y][x];
-            tmp2.h = tmp2.h/2;
-            if(pointInRect(tmp2,mouse)){
-                SDL_Point ofSet = getISOofSet(pGame->pMap->pTileSurface,mouse.x%pGame->pMap->TILE_SIZE_W,
-                    mouse.y%(pGame->pMap->TILE_SIZE_H/2));
-                //inIsometricRect(pMapMaker->rect_map[y][x],mouse);
-                pMapMaker->ISOofSet.x = ofSet.x;
-                pMapMaker->ISOofSet.y = ofSet.y;
-                pMapMaker->highlight_rect.x = x;
-                pMapMaker->highlight_rect.y = y;
-                break;
-            }
+            //if(++ode%2==1){
+                SDL_Rect tileBox = pMapMaker->rect_map[y][x];
+                // Instead of halving tileBox.h, do a diamond test:
+
+                if (inDiamond(tileBox, mouse)) {
+                    // That means we clicked inside tile (x,y)
+                    pMapMaker->highlight_rect.x = x;
+                    pMapMaker->highlight_rect.y = y;
+                }
+            //}
+            
         }
     }
     if(mouseState)pMapMaker->map[pMapMaker->highlight_rect.y+pMapMaker->ISOofSet.y][pMapMaker->highlight_rect.x+pMapMaker->ISOofSet.x] = pMapMaker->selectedTile;
@@ -253,62 +254,4 @@ void resizeWindow(MapMaker *pMapMaker, Map *pMap,SDL_Window *pWindow){
     int tmp1 = height/VISIBLE_WINDOW_Y;
     pMap->TILE_SIZE_H = tmp1;
     updatCurentMap(pMapMaker->rect_map,pMap->TILE_SIZE_W,pMap->TILE_SIZE_H);
-}
-
-/*
-SDL_Point inIsometricRect(SDL_Rect A,SDL_Point mouse){// 0 inuti rätt -+ fel
-    SDL_Point ofSet ={0,0};
-    if(mouse.y>=A.y+(A.h/4)){
-        if(mouse.x>=A.x+(A.w/2)){
-            if(mouse.y>=((A.y+(A.h/2))-(mouse.x*2))){
-            ofSet = (SDL_Point){1,0};
-            }else ofSet = (SDL_Point){0,0};
-        }else {
-            if(mouse.y>=((A.y+(A.h/4))+(mouse.x*2))){
-            ofSet = (SDL_Point){0,1};
-            }else ofSet = (SDL_Point){0,0};
-        }
-    }else{
-        if(mouse.x>=A.x+(A.w/2)){
-                        if(mouse.y<=((A.y)-(mouse.x*2))){
-            ofSet = (SDL_Point){0,-1};
-            }else ofSet = (SDL_Point){0,0};
-        }else{
-            if(mouse.y<=((A.y+(A.h/4))-(mouse.x*2))){
-            ofSet = (SDL_Point){-1,0};
-            }else ofSet = (SDL_Point){0,0};
-        }
-    }
-    return ofSet;
-}
-*/
-
-SDL_Point getISOofSet(SDL_Surface *surface, int x, int y){
-    // Lås ytan innan vi läser (om den inte redan är låst)
-    x=x+(3*64); 
-    if (SDL_MUSTLOCK(surface)) {
-        if (SDL_LockSurface(surface) < 0) {
-            fprintf(stderr, "Can't lock surface: %s\n", SDL_GetError());
-        }
-    }
-    
-    // Hämta själva pixelvärdet (RGBA packat i en Uint32)
-    Uint32 pixel = getPixel(surface, x, y);
-    
-    // Konvertera till R, G, B, A
-    Uint8 r, g, b, a;
-    SDL_GetRGBA(pixel, surface->format, &r, &g, &b, &a);
-
-    // Lås upp när klart
-    if (SDL_MUSTLOCK(surface)) {
-        SDL_UnlockSurface(surface);
-    }
-    SDL_Point ofSet = {0,0};
-    if(g>128 && b>128 && r>128) return ofSet;
-    printf("Pixel at (%d,%d) has RGBA = (r%u,g%u,b%u)\n", x, y, r, g, b);
-    if(r>128) ofSet =(SDL_Point){-1,0};
-    if(g>128) ofSet =(SDL_Point){0,-1};
-    if(b>128) ofSet =(SDL_Point){1,0};
-    if(g>128 && b>128) ofSet =(SDL_Point){0,1};
-    return ofSet;
 }
