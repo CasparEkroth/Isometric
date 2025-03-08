@@ -1,7 +1,7 @@
 start0
-cc`cbcbbb`d````bbbbbbbbbbbb``c
-b`cbcbbbbbbbbbbabb``bbbcbb```c
-ccc`cccbccccbdbab``cccbb`b```c
+cc`cbcbbb`d````bbbbbbbbbbbb``d
+b`cbcbbbbbbbbbbabb``bbbcbb``dd
+ccc`cccbccccbdbab``cccbb`b```d
 bccccbcccbbccccaad`cc`b``bbc`c
 `cccbcbcccdc`ccabccbcbbcbbcbcc
 ``cbcbbbccddcccacbcbbcbbbcbcdc
@@ -30,8 +30,8 @@ bbbbbbcbbbbbccbbbbbbcb``b`bcbc
 c`b``c`bbcccccccbcccbbbbbcbccc
 c`b``c`bbcccccccbcccbbbbbcbccc
 start1
-bee`e`e``````````````````````a
-`````````````````````````````c
+bee`e`e``````````````````````d
+`````````````````````````````d
 `````````````````````````````e
 `````````````````````````````e
 ```````ddd```````````````````e

@@ -3,22 +3,22 @@
 // where the lowest level is 0 and then if the room 
 // name is "start" the first level will be called "start0"
 // and the second level is "start1" etc.
-MapLayer *createLayerOfMap(int Level,char roomName[NAME],char fileName[NAME]){
+MapLayer *createLayerOfMap(int Layer,char roomName[NAME],char fileName[NAME]){
     MapLayer *pMapLayer = malloc(sizeof(MapLayer));
     if (!pMapLayer) {
-        fprintf(stderr, "Failed to allocate memory for Map Level %d\n",Level);
+        fprintf(stderr, "Failed to allocate memory for Map Layer %d\n",Layer);
         return NULL;
     }
     for (int y = 0; y < NUMMBER_OF_TILSE_Y; y++){
         for (int x = 0; x < NUMMBER_OF_TILSE_X; x++){
             pMapLayer->tileRect[y][x].w = ISO_TILE_SIZE;
-            pMapLayer->tileRect[y][x].h = ISO_TILE_SIZE;     // isomtric mey have to change this 
-            pMapLayer->tileRect[y][x].x = (int)(((x - y) * ( ISO_TILE_SIZE/2))-(Level*ISO_TILE_SIZE/2));
-            pMapLayer->tileRect[y][x].y = (int)(((x + y) * ( ISO_TILE_SIZE/4))-(Level*ISO_TILE_SIZE/4));
-        }//ofset är fel den ska -1Y
+            pMapLayer->tileRect[y][x].h = ISO_TILE_SIZE;     // isomtric 
+            pMapLayer->tileRect[y][x].x = (int)((x - y) * ( ISO_TILE_SIZE/2));
+            pMapLayer->tileRect[y][x].y = (int)(((x + y) * ( ISO_TILE_SIZE/4))-(Layer*ISO_TILE_SIZE/2));
+        }
     }
     char localRomName[NAME];
-    snprintf(localRomName, sizeof(localRomName), "%s%d", roomName, Level);
+    snprintf(localRomName, sizeof(localRomName), "%s%d", roomName, Layer);
     trimWhitespace(localRomName);
     strcpy(pMapLayer->roomLayerName,localRomName);
     redeFileForMap(pMapLayer->tileMap, fileName, localRomName);
