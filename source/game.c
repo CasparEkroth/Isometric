@@ -25,8 +25,10 @@ void update(Game *pGame){
 
 void render(Game *pGame){
     SDL_RenderClear(pGame->pRenderer);
-    renderMap(pGame->pRenderer,pGame->pMap->tileMap,pGame->pMap->tileIndex,pGame->pMap->pTileShet,
-    pGame->pMap->tileRect);
+    for (int i = 0; i < DEPTH; i++){
+        renderMap(pGame->pRenderer,pGame->pMap->pTrueMap[i]->tileMap,pGame->pMap->tileIndex,pGame->pMap->pTileShet,
+        pGame->pMap->pTrueMap[i]->tileRect);
+    }
     SDL_RenderPresent(pGame->pRenderer);
 }
 

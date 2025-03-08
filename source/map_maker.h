@@ -10,15 +10,16 @@
 
 typedef struct {
     char selectedTile;
-    int fileIdex;
+    int fileIdex[DEPTH];
     int zoom;
     SDL_Point highlight_rect,visibleWindow;
     SDL_Point mapOfset,mousePos,ISOofSet;
     char fileName[NAME];
     char romeName[NAME];
-    bool isNewRoom;
-    char map[NUMMBER_OF_TILSE_Y][NUMMBER_OF_TILSE_X];
-    SDL_Rect rect_map[NUMMBER_OF_TILSE_Y][NUMMBER_OF_TILSE_X];
+    //char map[NUMMBER_OF_TILSE_Y][NUMMBER_OF_TILSE_X];
+    //SDL_Rect rect_map[NUMMBER_OF_TILSE_Y][NUMMBER_OF_TILSE_X];
+    MapLayer *pLayer[DEPTH];
+    int selectedLayer;
     bool isSavede,isChosingNewTile,isMakingMap;
     bool keys[SDL_NUM_SCANCODES];
 }MapMaker;
@@ -43,7 +44,9 @@ void maker_update(MapMaker *pMapMaker,SDL_Window *pWindow);
 void maker_render(SDL_Renderer *pRendererer,MapMaker *pMapMaker,Map *pMap,SDL_Event event);
 //render
 
-void saveMademap(MapMaker *pMapMaker);
+//void saveMademap(MapMaker *pMapMaker);
+void saveMademap(char fileName[],int fileIdex,char roomNameL[],char map[][NUMMBER_OF_TILSE_X]);
+
 //savse the map by rewrhitning the hole thing 
 
 void resizeWindow(MapMaker *pMapMaker, Map *pMap,SDL_Window *pWindow);
