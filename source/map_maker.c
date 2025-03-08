@@ -8,30 +8,31 @@ MapMaker* initMapMaker(char fileName[NAME],int tileSizeW,int tileSizeH,char rome
         fprintf(stderr,"Erorr alocating memory for MapMaker\n");
         return NULL;
     }
-    if(isOnListofRom(fileName,romeName,&pMapMaker->fileIdex)){
-        pMapMaker->isNewRoom = false;
-        redeFileForMap(pMapMaker->map,fileName,romeName);
-    }else{
-        pMapMaker->isNewRoom = true;
-        for (int y = 0; y < NUMMBER_OF_TILSE_Y; y++){
-            for (int x = 0; x < NUMMBER_OF_TILSE_X; x++){
-                pMapMaker->map[y][x] = ('a'-1);
+    for (int i = 0; i < DEPTH; i++) pMapMaker->fileIdex[i] = 0;
+        /*{
+            redeFileForMap(pMapMaker->pLayer[i]->tileMap,fileName,pMapMaker->pLayer[i]->roomLayerName);
+        }else{
+            for (int y = 0; y < NUMMBER_OF_TILSE_Y; y++){
+                for (int x = 0; x < NUMMBER_OF_TILSE_X; x++){
+                    pMapMaker->pLayer[i]->tileMap[y][x] = ('a'-1);
+                }
             }
-        }
-    }
+        }*/
+    
     pMapMaker->isChosingNewTile = false;
     pMapMaker->isMakingMap = true;
     pMapMaker->isSavede = false;
     strcpy(pMapMaker->fileName,fileName);
     strcpy(pMapMaker->romeName,romeName);
-    for (int y = 0; y < NUMMBER_OF_TILSE_Y; y++){
+    /*for (int y = 0; y < NUMMBER_OF_TILSE_Y; y++){
         for (int x = 0; x < NUMMBER_OF_TILSE_X; x++){
             pMapMaker->rect_map[y][x].w = tileSizeW;
             pMapMaker->rect_map[y][x].h = tileSizeH;    //isometric
             pMapMaker->rect_map[y][x].x = (int)(x - y) * ( tileSizeW/2);
             pMapMaker->rect_map[y][x].y = (int)(x + y) * ( tileSizeH/4);
         }
-    }
+    }*/
+    pMapMaker->selectedLayer = 1;
     pMapMaker->zoom = 0;
     pMapMaker->visibleWindow.x = VISIBLE_WINDOW_X;
     pMapMaker->visibleWindow.y = VISIBLE_WINDOW_Y;
@@ -52,7 +53,12 @@ void maker(MapMaker *pMapMaker, Game *pGame,bool *isProgramRunnig){
         maker_update(pMapMaker,pGame->pWindow);
         maker_render(pGame->pRenderer,pMapMaker,pGame->pMap,event);
     }
-    saveMademap(pMapMaker);
+    for (int i = 0; i < DEPTH; i++){
+        saveMademap(pMapMaker->fileName,pMapMaker->fileIdex[i],pMapMaker->pLayer[i]->roomLayerName,
+        pMapMaker->pLayer[i]->tileMap);
+    }//#############################################
+    
+    for (int i = 0; i < DEPTH; i++) if(pMapMaker->pLayer[i]) free(pMapMaker->pLayer[i]);
     free(pMapMaker);
 }
 
@@ -78,15 +84,19 @@ void maker_render(SDL_Renderer *pRenderer,MapMaker *pMapMaker,Map *pMap,SDL_Even
                 A.y += 64;
             }
         }
+        //##########################
+        //### välja lager // selsectetLayer
+        //##########################
     }else{
-        renderMap(pRenderer,pMapMaker->map,pMap->tileIndex,pMap->pTileShet,pMapMaker->rect_map);
-        //SDL_SetRenderDrawColor(pRenderer, 255, 0, 0, 255);  // Red
+        for (int i = 0; i < DEPTH; i++){
+            renderMap(pRenderer,pMapMaker->pLayer[i]->tileMap,
+            pMap->tileIndex,pMap->pTileShet,pMapMaker->pLayer[i]->tileRect);
+        }        
         if (pMapMaker->highlight_rect.x < NUMMBER_OF_TILSE_X && pMapMaker->highlight_rect.y < NUMMBER_OF_TILSE_Y) {
-            SDL_Rect tmp = pMapMaker->rect_map[pMapMaker->highlight_rect.y][pMapMaker->highlight_rect.x];
+            SDL_Rect tmp = pMapMaker->pLayer[pMapMaker->selectedLayer]->tileRect[pMapMaker->highlight_rect.y][pMapMaker->highlight_rect.x];
             tmp.h = tmp.h/2;
-            //SDL_RenderDrawRect(pRenderer, &tmp);
             SDL_RenderCopy(pRenderer,pMap->pTileShet,&pMap->tileIndex[0],
-            &pMapMaker->rect_map[pMapMaker->highlight_rect.y+pMapMaker->ISOofSet.y][pMapMaker->highlight_rect.x+pMapMaker->ISOofSet.x]);
+            &pMapMaker->pLayer[pMapMaker->selectedLayer]->tileRect[pMapMaker->highlight_rect.y+pMapMaker->ISOofSet.y][pMapMaker->highlight_rect.x+pMapMaker->ISOofSet.x]);
         }
     }
     SDL_SetRenderDrawColor(pRenderer, 0, 0, 0, 255);
@@ -94,10 +104,12 @@ void maker_render(SDL_Renderer *pRenderer,MapMaker *pMapMaker,Map *pMap,SDL_Even
 }
 
 void maker_update(MapMaker *pMapMaker,SDL_Window *pWindow){
-    for (int y = 0; y < NUMMBER_OF_TILSE_Y; y++){
-        for (int x = 0; x < NUMMBER_OF_TILSE_X; x++){
-            pMapMaker->rect_map[y][x].x += pMapMaker->mapOfset.x;
-            pMapMaker->rect_map[y][x].y += pMapMaker->mapOfset.y;
+    for (int i = 0; i < DEPTH; i++){
+        for (int y = 0; y < NUMMBER_OF_TILSE_Y; y++){
+            for (int x = 0; x < NUMMBER_OF_TILSE_X; x++){
+                pMapMaker->pLayer[i]->tileRect[y][x].x += pMapMaker->mapOfset.x;
+                pMapMaker->pLayer[i]->tileRect[y][x].y += pMapMaker->mapOfset.y;
+            }
         }
     }
     if(pMapMaker->zoom != 0){
@@ -107,7 +119,7 @@ void maker_update(MapMaker *pMapMaker,SDL_Window *pWindow){
         pMapMaker->visibleWindow.y +=pMapMaker->zoom;
         width = width/pMapMaker->visibleWindow.x;
         height = height/pMapMaker->visibleWindow.y;
-        updatCurentMap(pMapMaker->rect_map,width,height);
+        for(int i = 0; i < DEPTH; i++)updatCurentMap(pMapMaker->pLayer[i]->tileRect,width,height);
     }
     pMapMaker->mapOfset =(SDL_Point){0,0};
     pMapMaker->zoom = 0;
@@ -143,9 +155,8 @@ void maker_input(MapMaker *pMapMaker,SDL_Event event,bool *isProgramRunnig,Game 
     for (int y = 0; y < NUMMBER_OF_TILSE_Y; y++){
         for (int x = 0; x < NUMMBER_OF_TILSE_X; x++){
             //if(++ode%2==1){
-                SDL_Rect tileBox = pMapMaker->rect_map[y][x];
+                SDL_Rect tileBox = pMapMaker->pLayer[pMapMaker->selectedLayer]->tileRect[y][x];
                 // Instead of halving tileBox.h, do a diamond test:
-
                 if (inDiamond(tileBox, mouse)) {
                     // That means we clicked inside tile (x,y)
                     pMapMaker->highlight_rect.x = x;
@@ -155,7 +166,9 @@ void maker_input(MapMaker *pMapMaker,SDL_Event event,bool *isProgramRunnig,Game 
             
         }
     }
-    if(mouseState)pMapMaker->map[pMapMaker->highlight_rect.y+pMapMaker->ISOofSet.y][pMapMaker->highlight_rect.x+pMapMaker->ISOofSet.x] = pMapMaker->selectedTile;
+    if(mouseState)pMapMaker->pLayer[pMapMaker->selectedLayer]->
+    tileMap[pMapMaker->highlight_rect.y+pMapMaker->ISOofSet.y][pMapMaker->highlight_rect.x+pMapMaker->ISOofSet.x] 
+    = pMapMaker->selectedTile;
     if(pMapMaker->keys[SDL_SCANCODE_ESCAPE]){
         pMapMaker->isMakingMap = false;
         *isProgramRunnig = false;
@@ -177,12 +190,15 @@ void maker_input(MapMaker *pMapMaker,SDL_Event event,bool *isProgramRunnig,Game 
         }
         resizeWindow(pMapMaker,pGame->pMap,pGame->pWindow);
     } 
+    if(pMapMaker->keys[SDL_SCANCODE_0]) pMapMaker->selectedLayer = 0;
+    if(pMapMaker->keys[SDL_SCANCODE_1]) pMapMaker->selectedLayer = 1;
 }
 
-void saveMademap(MapMaker *pMapMaker){
-    FILE *fp = fopen(pMapMaker->fileName, "r");// något blir fel arayen skjut åt ett håll
+//added changes so that the isometric levels are also saved
+void saveMademap(char fileName[],int fileIdex,char roomNameL[],char map[][NUMMBER_OF_TILSE_X]){
+    FILE *fp = fopen(fileName, "r");// något blir fel arayen skjut åt ett håll
     if (!fp) {
-        fprintf(stderr, "Error: Could not open %s for reading!\n", pMapMaker->fileName);
+        fprintf(stderr, "Error: Could not open %s for reading!\n",fileName);
         return;
     }
     FILE *tmp = fopen("tmp.txt", "w");
@@ -193,7 +209,7 @@ void saveMademap(MapMaker *pMapMaker){
     }
     char buffer[256];
     int count = 0;
-    int skipCondition = pMapMaker->fileIdex;
+    int skipCondition = fileIdex;
     while (fgets(buffer, sizeof(buffer), fp) != NULL){
         if(count == skipCondition){
             for (int i = 0; i < NUMMBER_OF_TILSE_Y; i++){
@@ -205,10 +221,11 @@ void saveMademap(MapMaker *pMapMaker){
         fprintf(tmp,"%s\n",buffer);
         count++;
     }
-    fprintf(tmp,"%s\n",pMapMaker->romeName);
+    trimWhitespace(roomNameL);
+    fprintf(tmp,"%s\n",roomNameL);
     for (int y = 0; y < NUMMBER_OF_TILSE_Y; y++){
         for (int x = 0; x < NUMMBER_OF_TILSE_X; x++){
-            fprintf(tmp,"%c",pMapMaker->map[y][x]);
+            fprintf(tmp,"%c",map[y][x]);
         }
         fprintf(tmp,"\n");
     }
@@ -220,8 +237,8 @@ void saveMademap(MapMaker *pMapMaker){
     fclose(fp);
     fclose(tmp);
 
-    remove(pMapMaker->fileName);
-    rename("tmp.txt", pMapMaker->fileName);
+    remove(fileName);
+    rename("tmp.txt",fileName);
 }
 
 bool isOnListofRom(char fileName[NAME],char romName[NAME],int *fileIndex){
@@ -253,5 +270,7 @@ void resizeWindow(MapMaker *pMapMaker, Map *pMap,SDL_Window *pWindow){
     pMap->TILE_SIZE_W = tmp;
     int tmp1 = height/VISIBLE_WINDOW_Y;
     pMap->TILE_SIZE_H = tmp1;
-    updatCurentMap(pMapMaker->rect_map,pMap->TILE_SIZE_W,pMap->TILE_SIZE_H);
+    for(int i = 0; i < DEPTH; i++)updatCurentMap(pMapMaker->pLayer[i]->tileRect,pMap->TILE_SIZE_W,pMap->TILE_SIZE_H);
 }
+
+

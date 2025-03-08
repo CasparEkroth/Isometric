@@ -1,7 +1,7 @@
 #ifndef GAME_H
 #define GAME_H
 
-#include "map.h"
+#include "mapISO.h"
 
 typedef struct{
     SDL_Window* pWindow;
