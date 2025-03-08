@@ -14,7 +14,7 @@ bool initialize_window(SDL_Window **ppWindow, SDL_Renderer **ppRenderer){
         return false;
     }
     SDL_Window *win = SDL_CreateWindow(
-        "Isometric",
+        "Isometric MapMaker (CE)",
         SDL_WINDOWPOS_CENTERED,
         SDL_WINDOWPOS_CENTERED,
         STARTING_WINDOW_WIDTH,
@@ -33,10 +33,8 @@ bool initialize_window(SDL_Window **ppWindow, SDL_Renderer **ppRenderer){
         SDL_DestroyWindow(win);
         return false;
     }
-
-    // If we got here, everything is fine:
-    *ppWindow = win;  // Now it sets the caller's pointer
-    *ppRenderer = ren; //  ...
+    *ppWindow = win;  
+    *ppRenderer = ren;
     return true;
 }
 

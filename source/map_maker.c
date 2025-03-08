@@ -9,29 +9,13 @@ MapMaker* initMapMaker(char fileName[NAME],int tileSizeW,int tileSizeH,char rome
         return NULL;
     }
     for (int i = 0; i < DEPTH; i++) pMapMaker->fileIdex[i] = 0;
-        /*{
-            redeFileForMap(pMapMaker->pLayer[i]->tileMap,fileName,pMapMaker->pLayer[i]->roomLayerName);
-        }else{
-            for (int y = 0; y < NUMMBER_OF_TILSE_Y; y++){
-                for (int x = 0; x < NUMMBER_OF_TILSE_X; x++){
-                    pMapMaker->pLayer[i]->tileMap[y][x] = ('a'-1);
-                }
-            }
-        }*/
-    
+
     pMapMaker->isChosingNewTile = false;
     pMapMaker->isMakingMap = true;
     pMapMaker->isSavede = false;
     strcpy(pMapMaker->fileName,fileName);
     strcpy(pMapMaker->romeName,romeName);
-    /*for (int y = 0; y < NUMMBER_OF_TILSE_Y; y++){
-        for (int x = 0; x < NUMMBER_OF_TILSE_X; x++){
-            pMapMaker->rect_map[y][x].w = tileSizeW;
-            pMapMaker->rect_map[y][x].h = tileSizeH;    //isometric
-            pMapMaker->rect_map[y][x].x = (int)(x - y) * ( tileSizeW/2);
-            pMapMaker->rect_map[y][x].y = (int)(x + y) * ( tileSizeH/4);
-        }
-    }*/
+
     pMapMaker->selectedLayer = 1;
     pMapMaker->zoom = 0;
     pMapMaker->visibleWindow.x = VISIBLE_WINDOW_X;
@@ -56,8 +40,7 @@ void maker(MapMaker *pMapMaker, Game *pGame,bool *isProgramRunnig){
     for (int i = 0; i < DEPTH; i++){
         saveMademap(pMapMaker->fileName,pMapMaker->fileIdex[i],pMapMaker->pLayer[i]->roomLayerName,
         pMapMaker->pLayer[i]->tileMap);
-    }//#############################################
-    
+    }
     for (int i = 0; i < DEPTH; i++) if(pMapMaker->pLayer[i]) free(pMapMaker->pLayer[i]);
     free(pMapMaker);
 }
@@ -68,7 +51,6 @@ void maker_render(SDL_Renderer *pRenderer,MapMaker *pMapMaker,Map *pMap,SDL_Even
     if(pMapMaker->isChosingNewTile){
         SDL_Rect A ={32,32,32,32};
         for (int i = 0; i <NUMMBER_OF_DIFFERENT_TILSE; i++){
-            //SDL_RenderCopy(pRenderer,pMap->pTileShet,&pMap->tileIndex[i],&A);
             renderTile(pRenderer,'a'+i,pMap->tileIndex,A,pMap->pTileShet);
             if(pointInRect(A,pMapMaker->mousePos)){
                 SDL_SetRenderDrawColor(pRenderer, 255, 0, 0, 255);  // Red

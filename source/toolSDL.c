@@ -72,7 +72,7 @@ Uint32 getPixel(SDL_Surface *surface, int x, int y) {
 
 void RBG(SDL_Surface *surface, int x, int y){
     // Lås ytan innan vi läser (om den inte redan är låst)
-    x=x+(3*64); 
+    //x=x+(3*64); 
     if (SDL_MUSTLOCK(surface)) {
         if (SDL_LockSurface(surface) < 0) {
             fprintf(stderr, "Can't lock surface: %s\n", SDL_GetError());

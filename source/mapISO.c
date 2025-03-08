@@ -107,7 +107,6 @@ void renderMap(SDL_Renderer *pRenderer,char tileMap[NUMMBER_OF_TILSE_Y][NUMMBER_
     }
 }
 
-
 void redeFileForMap(char tileMap[NUMMBER_OF_TILSE_Y][NUMMBER_OF_TILSE_X], char fileName[], char newRoom[]){
     char buffer[256];
     bool foundRoom = false;
@@ -123,7 +122,6 @@ void redeFileForMap(char tileMap[NUMMBER_OF_TILSE_Y][NUMMBER_OF_TILSE_X], char f
                 for (int x = 0; x < NUMMBER_OF_TILSE_X; x++) {
                     fscanf(fp, " %c", &tileMap[y][x]);
                 }
-                //tileMap[y][NUMMBER_OF_TILSE_X-1] = '\0';
                 trimWhitespace(tileMap[y]); 
             }
             foundRoom = true;
