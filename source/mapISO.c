@@ -36,7 +36,7 @@ Map *createMap(SDL_Renderer *pRenderer){
 
     pMap->TILE_SIZE_H = ISO_TILE_SIZE;
     pMap->TILE_SIZE_W = ISO_TILE_SIZE;
-    SDL_Surface *tmpMap = IMG_Load("resources/ISO6.png");
+    SDL_Surface *tmpMap = IMG_Load("resources/ISO7.png");
     if(!tmpMap){
         fprintf(stderr,"Error creating Surface for map, %s\n",IMG_GetError());
         return NULL;
@@ -52,6 +52,7 @@ Map *createMap(SDL_Renderer *pRenderer){
     pMap->tileIndex[2] = (SDL_Rect){64*2,0,64,64}; 
     pMap->tileIndex[3] = (SDL_Rect){64*3,0,64,64}; 
     pMap->tileIndex[4] = (SDL_Rect){0,64,64,64}; 
+    pMap->tileIndex[5] = (SDL_Rect){64,64,64,64}; 
     return pMap;
 }
 
@@ -83,7 +84,12 @@ void renderTile(SDL_Renderer *pRenderer,char tile,SDL_Rect tileIndex[NUMMBER_OF_
     case 'e':
         SDL_RenderCopy(pRenderer,pTileShet,&tileIndex[4],&tileRect);
         break;
-    
+    case 'f':
+        SDL_RenderCopy(pRenderer,pTileShet,&tileIndex[5],&tileRect);
+        break;
+    case 'g':
+        SDL_RenderCopy(pRenderer,pTileShet,&tileIndex[6],&tileRect);
+        break;
     default:   
         //void (´ || a -1 )
         break;
