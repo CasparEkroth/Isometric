@@ -8,7 +8,7 @@
 #define FILE_LENGTH 40 
 #define TILE_SIZE 32
 #define ISO_TILE_SIZE (TILE_SIZE*2)
-#define DEPTH 2
+#define DEPTH 3
 typedef struct {
     char tileMap[NUMMBER_OF_TILSE_Y][NUMMBER_OF_TILSE_X];
     SDL_Rect tileRect[NUMMBER_OF_TILSE_Y][NUMMBER_OF_TILSE_X];//pos

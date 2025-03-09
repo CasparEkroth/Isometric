@@ -38,6 +38,7 @@ void maker(MapMaker *pMapMaker, Game *pGame,bool *isProgramRunnig){
         maker_render(pGame->pRenderer,pMapMaker,pGame->pMap,event);
     }
     for (int i = 0; i < DEPTH; i++){
+        if(pMapMaker->fileIdex[i] == 0) pMapMaker->fileIdex[i] = i*NUMMBER_OF_TILSE_Y+i;
         saveMademap(pMapMaker->fileName,pMapMaker->fileIdex[i],pMapMaker->pLayer[i]->roomLayerName,
         pMapMaker->pLayer[i]->tileMap);
     }
@@ -174,6 +175,7 @@ void maker_input(MapMaker *pMapMaker,SDL_Event event,bool *isProgramRunnig,Game 
     } 
     if(pMapMaker->keys[SDL_SCANCODE_0]) pMapMaker->selectedLayer = 0;
     if(pMapMaker->keys[SDL_SCANCODE_1]) pMapMaker->selectedLayer = 1;
+    if(pMapMaker->keys[SDL_SCANCODE_2]) pMapMaker->selectedLayer = 2;
 }
 
 //added changes so that the isometric levels are also saved
