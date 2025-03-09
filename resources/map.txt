@@ -1,5 +1,5 @@
 start0
-cc`cbcbbb`d````bbbbbbbbbbbb``d
+c``cbcbbb`d````bbbbbbbbbbbb``d
 b`cbcbbbbbbbbbbabb``bbbcbb``dd
 ccc`cccbccccbdbab``cccbb`b```d
 bccccbcccbbccccaad`cc`b``bbc`c
@@ -15,9 +15,9 @@ ccbcbcbb`cccbcccbcccc`bccccce`
 cccccccbbccccbccccccc`bccccce`
 dcccccccbbc`ccccbccccbbcccccb`
 ccbbbcbccccccccccbbcb`bcccccc`
-`cbbbcccbcc`cccccccc``bcccbcc`
+`cdbbcccbcc`cccccccc``bcccbcc`
 cccccbbcccc`bbccc``bcb``bc`cb`
-bbbbbbcbcccccbbccbbbcb``bcccbc
+b`bbbbcbcccccbbccbbbcb``bcccbc
 bbbbbbccccccccbcccbbcbccccccbc
 bbbbbbcccccccccbccbbcbccccccbc
 bbbbbbcbccccccbbccbbcb``bbbcbc
@@ -28,9 +28,9 @@ bbbbbbcbbbcbccccbbcccb``b``cbc
 bbbbbbcbbbbcbccbbbbbcb``b``cbc
 bbbbbbcbbbbbccbbbbbbcb``b`bcbc
 c`b``c`bbcccccccbcccbbbbbcbccc
-c`b``c`bbcccccccbcccbbbbbcbccc
+c`b``c`bbcccccccbccdddbbbcbccc
 start1
-``````cc`````````````````````d
+b````````````````````````````d
 `````````````````````````````d
 `````````````````````````````e
 `````````````````````````````e
@@ -59,9 +59,9 @@ start1
 ```````d``d`ddd``dd``````d````
 ``````````````````````````````
 ``````````````````````````````
-````````ee````````d`d`dddd````
+````````ee````````dddddddd````
 start2
-``````cc``````````````````````
+c`````````````````````````````
 ``````````````````````````````
 ``````````````````````````````
 ``````````````````````````````
@@ -90,4 +90,4 @@ start2
 ``````````````````````````````
 ``````````````````````````````
 ``````````````````````````````
-``````````````````````````````
+``````````````````dddd````````
