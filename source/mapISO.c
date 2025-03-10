@@ -3,22 +3,22 @@
 // where the lowest level is 0 and then if the room 
 // name is "start" the first level will be called "start0"
 // and the second level is "start1" etc.
-MapLayer *createLayerOfMap(int Level,char roomName[NAME],char fileName[NAME]){
+MapLayer *createLayerOfMap(int Layer,char roomName[NAME],char fileName[NAME]){
     MapLayer *pMapLayer = malloc(sizeof(MapLayer));
     if (!pMapLayer) {
-        fprintf(stderr, "Failed to allocate memory for Map Level %d\n",Level);
+        fprintf(stderr, "Failed to allocate memory for Map Layer %d\n",Layer);
         return NULL;
     }
     for (int y = 0; y < NUMMBER_OF_TILSE_Y; y++){
         for (int x = 0; x < NUMMBER_OF_TILSE_X; x++){
             pMapLayer->tileRect[y][x].w = ISO_TILE_SIZE;
-            pMapLayer->tileRect[y][x].h = ISO_TILE_SIZE;     // isomtric mey have to change this 
-            pMapLayer->tileRect[y][x].x = (int)(((x - y) * ( ISO_TILE_SIZE/2))-(Level*ISO_TILE_SIZE/2));
-            pMapLayer->tileRect[y][x].y = (int)(((x + y) * ( ISO_TILE_SIZE/4))-(Level*ISO_TILE_SIZE/4));
-        }//ofset är fel den ska -1Y
+            pMapLayer->tileRect[y][x].h = ISO_TILE_SIZE;     // isomtric 
+            pMapLayer->tileRect[y][x].x = (int)((x - y) * ( ISO_TILE_SIZE/2));
+            pMapLayer->tileRect[y][x].y = (int)(((x + y) * ( ISO_TILE_SIZE/4))-(Layer*ISO_TILE_SIZE/2));
+        }
     }
     char localRomName[NAME];
-    snprintf(localRomName, sizeof(localRomName), "%s%d", roomName, Level);
+    snprintf(localRomName, sizeof(localRomName), "%s%d", roomName, Layer);
     trimWhitespace(localRomName);
     strcpy(pMapLayer->roomLayerName,localRomName);
     redeFileForMap(pMapLayer->tileMap, fileName, localRomName);
@@ -36,7 +36,7 @@ Map *createMap(SDL_Renderer *pRenderer){
 
     pMap->TILE_SIZE_H = ISO_TILE_SIZE;
     pMap->TILE_SIZE_W = ISO_TILE_SIZE;
-    SDL_Surface *tmpMap = IMG_Load("resources/ISO6.png");
+    SDL_Surface *tmpMap = IMG_Load("resources/ISO7.png");
     if(!tmpMap){
         fprintf(stderr,"Error creating Surface for map, %s\n",IMG_GetError());
         return NULL;
@@ -52,6 +52,7 @@ Map *createMap(SDL_Renderer *pRenderer){
     pMap->tileIndex[2] = (SDL_Rect){64*2,0,64,64}; 
     pMap->tileIndex[3] = (SDL_Rect){64*3,0,64,64}; 
     pMap->tileIndex[4] = (SDL_Rect){0,64,64,64}; 
+    pMap->tileIndex[5] = (SDL_Rect){64,64,64,64}; 
     return pMap;
 }
 
@@ -83,7 +84,12 @@ void renderTile(SDL_Renderer *pRenderer,char tile,SDL_Rect tileIndex[NUMMBER_OF_
     case 'e':
         SDL_RenderCopy(pRenderer,pTileShet,&tileIndex[4],&tileRect);
         break;
-    
+    case 'f':
+        SDL_RenderCopy(pRenderer,pTileShet,&tileIndex[5],&tileRect);
+        break;
+    case 'g':
+        SDL_RenderCopy(pRenderer,pTileShet,&tileIndex[6],&tileRect);
+        break;
     default:   
         //void (´ || a -1 )
         break;
@@ -101,7 +107,6 @@ void renderMap(SDL_Renderer *pRenderer,char tileMap[NUMMBER_OF_TILSE_Y][NUMMBER_
     }
 }
 
-
 void redeFileForMap(char tileMap[NUMMBER_OF_TILSE_Y][NUMMBER_OF_TILSE_X], char fileName[], char newRoom[]){
     char buffer[256];
     bool foundRoom = false;
@@ -117,7 +122,6 @@ void redeFileForMap(char tileMap[NUMMBER_OF_TILSE_Y][NUMMBER_OF_TILSE_X], char f
                 for (int x = 0; x < NUMMBER_OF_TILSE_X; x++) {
                     fscanf(fp, " %c", &tileMap[y][x]);
                 }
-                //tileMap[y][NUMMBER_OF_TILSE_X-1] = '\0';
                 trimWhitespace(tileMap[y]); 
             }
             foundRoom = true;
