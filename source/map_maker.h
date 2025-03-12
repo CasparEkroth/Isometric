@@ -18,7 +18,7 @@ typedef struct {
     char romeName[NAME];
     MapLayer *pLayer[DEPTH];
     int selectedLayer;
-    bool isSavede,isChosingNewTile,isMakingMap;
+    bool isSavede,isChosingNewTile,isMakingMap,infoOpen;
     bool keys[SDL_NUM_SCANCODES];
     TTF_Font *pFont; 
     SDL_Texture *strings[NR_OF_STRINGS];

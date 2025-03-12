@@ -18,6 +18,7 @@ MapMaker* initMapMaker(char fileName[NAME],int tileSizeW,int tileSizeH,char rome
     pMapMaker->isChosingNewTile = false;
     pMapMaker->isMakingMap = true;
     pMapMaker->isSavede = false;
+    pMapMaker->infoOpen = false;
     strcpy(pMapMaker->fileName,fileName);
     strcpy(pMapMaker->romeName,romeName);
 
@@ -153,16 +154,13 @@ void maker_input(MapMaker *pMapMaker,SDL_Event event,bool *isProgramRunnig,Game 
     static int ode = 0;
     for (int y = 0; y < NUMMBER_OF_TILSE_Y; y++){
         for (int x = 0; x < NUMMBER_OF_TILSE_X; x++){
-            //if(++ode%2==1){
-                SDL_Rect tileBox = pMapMaker->pLayer[pMapMaker->selectedLayer]->tileRect[y][x];
-                // Instead of halving tileBox.h, do a diamond test:
-                if (inDiamond(tileBox, mouse)) {
-                    // That means we clicked inside tile (x,y)
-                    pMapMaker->highlight_rect.x = x;
-                    pMapMaker->highlight_rect.y = y;
-                }
-            //}
-            
+            SDL_Rect tileBox = pMapMaker->pLayer[pMapMaker->selectedLayer]->tileRect[y][x];
+            // Instead of halving tileBox.h, do a diamond test:
+            if (inDiamond(tileBox, mouse)){
+                // That means we clicked inside tile (x,y)
+                pMapMaker->highlight_rect.x = x;
+                pMapMaker->highlight_rect.y = y;
+            }            
         }
     }
     if(mouseState)pMapMaker->pLayer[pMapMaker->selectedLayer]->
@@ -177,10 +175,14 @@ void maker_input(MapMaker *pMapMaker,SDL_Event event,bool *isProgramRunnig,Game 
     if(pMapMaker->keys[SDL_SCANCODE_LEFT]) pMapMaker->mapOfset.x = SPEED;
     if(pMapMaker->keys[SDL_SCANCODE_RIGHT]) pMapMaker->mapOfset.x -= SPEED;
     if(pMapMaker->keys[SDL_SCANCODE_N]) pMapMaker->isChosingNewTile = true;
-    if(pMapMaker->keys[SDL_SCANCODE_RETURN]) pMapMaker->isChosingNewTile = false;
+    if(pMapMaker->keys[SDL_SCANCODE_RETURN]){
+        pMapMaker->isChosingNewTile = false;
+        pMapMaker->infoOpen = false;
+    } 
     if(pMapMaker->keys[SDL_SCANCODE_V]) pMapMaker->selectedTile = ('a'-1);
     if(pMapMaker->keys[SDL_SCANCODE_P]) pMapMaker->zoom = -1; 
     if(pMapMaker->keys[SDL_SCANCODE_M]) pMapMaker->zoom = 1; 
+    /*
     if(pMapMaker->keys[SDL_SCANCODE_P]){
         if (SDL_GetWindowFlags(pGame->pWindow) & SDL_WINDOW_FULLSCREEN){
             SDL_SetWindowFullscreen(pGame->pWindow, 0);  // Switch back to windowed mode
@@ -188,7 +190,7 @@ void maker_input(MapMaker *pMapMaker,SDL_Event event,bool *isProgramRunnig,Game 
             SDL_SetWindowFullscreen(pGame->pWindow, SDL_WINDOW_FULLSCREEN);  // Fullscreen mode
         }
         resizeWindow(pMapMaker,pGame->pMap,pGame->pWindow);
-    }
+    }*/
     if(pMapMaker->keys[SDL_SCANCODE_L]){
         pMapMaker->selectedLayer = (++pMapMaker->selectedLayer)%DEPTH;
         char tmp[NAME] = "LAYER";
