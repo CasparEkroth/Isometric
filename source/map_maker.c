@@ -32,6 +32,11 @@ MapMaker* initMapMaker(char fileName[NAME],int tileSizeW,int tileSizeH,char rome
     pMapMaker->mousePos = (SDL_Point){0,0};
     pMapMaker->ISOofSet = (SDL_Point){0,0};
     pMapMaker->stringPos[CURENT_LEYER]=(SDL_Rect){0,0,0,0};
+    pMapMaker->stringPos[INPUT_V]=(SDL_Rect){0,0,0,0};
+    pMapMaker->stringPos[INPUT_P]=(SDL_Rect){0,1,0,0};
+    pMapMaker->stringPos[INPUT_M]=(SDL_Rect){0,2,0,0};
+    pMapMaker->stringPos[INPUT_L]=(SDL_Rect){0,3,0,0};
+    pMapMaker->stringPos[INPUT_N]=(SDL_Rect){0,4,0,0};
     for (int i = 0; i < NR_OF_STRINGS; i++){
         pMapMaker->strings[i] = NULL; //for sefty
         pMapMaker->stringPos[i].h = ISO_TILE_SIZE;
@@ -40,6 +45,11 @@ MapMaker* initMapMaker(char fileName[NAME],int tileSizeW,int tileSizeH,char rome
     char tmp[NAME] = "LAYER";
     addIntToString(tmp,pMapMaker->selectedLayer);
     pMapMaker->strings[CURENT_LEYER] = textToScreen(tmp,pMapMaker->pFont,pRederer,&pMapMaker->stringPos[CURENT_LEYER]);
+    pMapMaker->strings[INPUT_V] = textToScreen("(V) make the selected tile void",pMapMaker->pFont,pRederer,&pMapMaker->stringPos[INPUT_V]);
+    pMapMaker->strings[INPUT_P] = textToScreen("(P) zoom in",pMapMaker->pFont,pRederer,&pMapMaker->stringPos[INPUT_P]);
+    pMapMaker->strings[INPUT_M] = textToScreen("(M) zoom out",pMapMaker->pFont,pRederer,&pMapMaker->stringPos[INPUT_M]);
+    pMapMaker->strings[INPUT_L] = textToScreen("(L) jumps to the next layer",pMapMaker->pFont,pRederer,&pMapMaker->stringPos[INPUT_L]);
+    pMapMaker->strings[INPUT_N] = textToScreen("(N) choose a new tile",pMapMaker->pFont,pRederer,&pMapMaker->stringPos[INPUT_N]);
     return pMapMaker;
 } 
 
@@ -86,6 +96,12 @@ void maker_render(SDL_Renderer *pRenderer,MapMaker *pMapMaker,Map *pMap,SDL_Even
         //##########################
         //### välja lager // selsectetLayer
         //##########################
+    }else if(pMapMaker->infoOpen){
+        SDL_RenderCopy(pRenderer,pMapMaker->strings[INPUT_V],NULL,&pMapMaker->stringPos[INPUT_V]);
+        SDL_RenderCopy(pRenderer,pMapMaker->strings[INPUT_P],NULL,&pMapMaker->stringPos[INPUT_P]);
+        SDL_RenderCopy(pRenderer,pMapMaker->strings[INPUT_M],NULL,&pMapMaker->stringPos[INPUT_M]);
+        SDL_RenderCopy(pRenderer,pMapMaker->strings[INPUT_N],NULL,&pMapMaker->stringPos[INPUT_N]);
+        SDL_RenderCopy(pRenderer,pMapMaker->strings[INPUT_L],NULL,&pMapMaker->stringPos[INPUT_L]);
     }else{
         for (int i = 0; i < DEPTH; i++){
             renderMap(pRenderer,pMapMaker->pLayer[i]->tileMap,
@@ -197,6 +213,7 @@ void maker_input(MapMaker *pMapMaker,SDL_Event event,bool *isProgramRunnig,Game 
         addIntToString(tmp,pMapMaker->selectedLayer);
         pMapMaker->strings[CURENT_LEYER] = makeStringInToSDL_Texture(tmp,pMapMaker->pFont,pGame->pRenderer);
     } 
+    if(pMapMaker->keys[SDL_SCANCODE_I]) pMapMaker->infoOpen = true;
 }
 
 //added changes so that the isometric levels are also saved

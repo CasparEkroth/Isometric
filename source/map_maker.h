@@ -6,7 +6,7 @@
 #define SPEED (32)
 #define ZOOM 10
 #define NAME 40
-#define NR_OF_STRINGS 5
+#define NR_OF_STRINGS 6
 
 typedef struct {
     char selectedTile;
@@ -27,6 +27,11 @@ typedef struct {
 
 typedef enum MyEnumTag{ // index for the strings   
     CURENT_LEYER = 0,
+    INPUT_V = 1,
+    INPUT_P = 2,
+    INPUT_M = 3,
+    INPUT_N = 4,
+    INPUT_L = 5,
 }MyEnumTag;
 
 MapMaker* initMapMaker(char fileName[NAME],int tileSizeW,int tileSizeH,char romeName[NAME],SDL_Renderer *pRenderer);
