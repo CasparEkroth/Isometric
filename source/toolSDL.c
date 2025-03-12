@@ -49,8 +49,23 @@ SDL_Texture* makeStringInToSDL_Texture(char string[NAME], TTF_Font *pFont,SDL_Re
     return pTextureString;
 }
 
+SDL_Texture* textToScreen(char string[NAME], TTF_Font *pFont,SDL_Renderer *pRendrerer,SDL_Rect *pRect){
+    SDL_Texture *pTexture = makeStringInToSDL_Texture(string,pFont,pRendrerer);
+    SDL_Point point ={pRect->x,pRect->y};
+    (*pRect) = setingSizeOfStringToRect(string,point,pRect->h,pRect->w);
+    printf("%dX  %dY\n",pRect->x,pRect->y);
+    printf("%dH  %dW\n",pRect->h,pRect->w);
+    return pTexture;
+}
 
-Uint32 getPixel(SDL_Surface *surface, int x, int y) {
+void addIntToString(char str[NAME], int X){
+    char tmp[NAME-(NAME/2)];
+    snprintf(tmp, sizeof(tmp), " %d", X);
+    trimWhitespace(str);
+    strcat(str,tmp);
+}
+
+Uint32 getPixel(SDL_Surface *surface, int x, int y){
     int bpp = surface->format->BytesPerPixel;
     Uint8 *p = (Uint8 *)surface->pixels + y * surface->pitch + x * bpp;
 

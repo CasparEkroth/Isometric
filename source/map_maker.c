@@ -2,21 +2,26 @@
 //input 
 //render 
 //seving to file                                                                                //ta bort
-MapMaker* initMapMaker(char fileName[NAME],int tileSizeW,int tileSizeH,char romeName[NAME]){
+MapMaker* initMapMaker(char fileName[NAME],int tileSizeW,int tileSizeH,char romeName[NAME],SDL_Renderer *pRederer){
     MapMaker* pMapMaker = malloc(sizeof(MapMaker));
     if(!pMapMaker){
         fprintf(stderr,"Erorr alocating memory for MapMaker\n");
         return NULL;
     }
     for (int i = 0; i < DEPTH; i++) pMapMaker->fileIdex[i] = 0;
-
+    pMapMaker->pFont = TTF_OpenFont("resources/Academy Engraved LET Fonts.ttf",24);
+    if(!pMapMaker->pFont){
+        fprintf(stderr,"Erorr opening font for MapMaker: %s",TTF_GetError());
+        return NULL;
+    }
+    char buffer[NAME]; 
     pMapMaker->isChosingNewTile = false;
     pMapMaker->isMakingMap = true;
     pMapMaker->isSavede = false;
     strcpy(pMapMaker->fileName,fileName);
     strcpy(pMapMaker->romeName,romeName);
 
-    pMapMaker->selectedLayer = 1;
+    pMapMaker->selectedLayer = 0;
     pMapMaker->zoom = 0;
     pMapMaker->visibleWindow.x = VISIBLE_WINDOW_X;
     pMapMaker->visibleWindow.y = VISIBLE_WINDOW_Y;
@@ -25,6 +30,15 @@ MapMaker* initMapMaker(char fileName[NAME],int tileSizeW,int tileSizeH,char rome
     pMapMaker->mapOfset = (SDL_Point){0,0};
     pMapMaker->mousePos = (SDL_Point){0,0};
     pMapMaker->ISOofSet = (SDL_Point){0,0};
+    pMapMaker->stringPos[CURENT_LEYER]=(SDL_Rect){0,0,0,0};
+    for (int i = 0; i < NR_OF_STRINGS; i++){
+        pMapMaker->strings[i] = NULL; //for sefty
+        pMapMaker->stringPos[i].h = ISO_TILE_SIZE;
+        pMapMaker->stringPos[i].w = ISO_TILE_SIZE;
+    } 
+    char tmp[NAME] = "LAYER";
+    addIntToString(tmp,pMapMaker->selectedLayer);
+    pMapMaker->strings[CURENT_LEYER] = textToScreen(tmp,pMapMaker->pFont,pRederer,&pMapMaker->stringPos[CURENT_LEYER]);
     return pMapMaker;
 } 
 
@@ -43,6 +57,7 @@ void maker(MapMaker *pMapMaker, Game *pGame,bool *isProgramRunnig){
         pMapMaker->pLayer[i]->tileMap);
     }
     for (int i = 0; i < DEPTH; i++) if(pMapMaker->pLayer[i]) free(pMapMaker->pLayer[i]);
+    for (int i = 0; i < NR_OF_STRINGS; i++) if(pMapMaker->strings[i])SDL_DestroyTexture(pMapMaker->strings[i]);
     free(pMapMaker);
 }
 
@@ -81,6 +96,7 @@ void maker_render(SDL_Renderer *pRenderer,MapMaker *pMapMaker,Map *pMap,SDL_Even
             SDL_RenderCopy(pRenderer,pMap->pTileShet,&pMap->tileIndex[0],
             &pMapMaker->pLayer[pMapMaker->selectedLayer]->tileRect[pMapMaker->highlight_rect.y+pMapMaker->ISOofSet.y][pMapMaker->highlight_rect.x+pMapMaker->ISOofSet.x]);
         }
+        SDL_RenderCopy(pRenderer,pMapMaker->strings[CURENT_LEYER],NULL,&pMapMaker->stringPos[CURENT_LEYER]);
     }
     SDL_SetRenderDrawColor(pRenderer, 0, 0, 0, 255);
     SDL_RenderPresent(pRenderer);
@@ -172,10 +188,13 @@ void maker_input(MapMaker *pMapMaker,SDL_Event event,bool *isProgramRunnig,Game 
             SDL_SetWindowFullscreen(pGame->pWindow, SDL_WINDOW_FULLSCREEN);  // Fullscreen mode
         }
         resizeWindow(pMapMaker,pGame->pMap,pGame->pWindow);
+    }
+    if(pMapMaker->keys[SDL_SCANCODE_L]){
+        pMapMaker->selectedLayer = (++pMapMaker->selectedLayer)%DEPTH;
+        char tmp[NAME] = "LAYER";
+        addIntToString(tmp,pMapMaker->selectedLayer);
+        pMapMaker->strings[CURENT_LEYER] = makeStringInToSDL_Texture(tmp,pMapMaker->pFont,pGame->pRenderer);
     } 
-    if(pMapMaker->keys[SDL_SCANCODE_0]) pMapMaker->selectedLayer = 0;
-    if(pMapMaker->keys[SDL_SCANCODE_1]) pMapMaker->selectedLayer = 1;
-    if(pMapMaker->keys[SDL_SCANCODE_2]) pMapMaker->selectedLayer = 2;
 }
 
 //added changes so that the isometric levels are also saved

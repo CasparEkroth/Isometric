@@ -6,7 +6,7 @@
 #define SPEED (32)
 #define ZOOM 10
 #define NAME 40
-
+#define NR_OF_STRINGS 5
 
 typedef struct {
     char selectedTile;
@@ -16,16 +16,20 @@ typedef struct {
     SDL_Point mapOfset,mousePos,ISOofSet;
     char fileName[NAME];
     char romeName[NAME];
-    //char map[NUMMBER_OF_TILSE_Y][NUMMBER_OF_TILSE_X];
-    //SDL_Rect rect_map[NUMMBER_OF_TILSE_Y][NUMMBER_OF_TILSE_X];
     MapLayer *pLayer[DEPTH];
     int selectedLayer;
     bool isSavede,isChosingNewTile,isMakingMap;
     bool keys[SDL_NUM_SCANCODES];
+    TTF_Font *pFont; 
+    SDL_Texture *strings[NR_OF_STRINGS];
+    SDL_Rect stringPos[NR_OF_STRINGS];
 }MapMaker;
 
+typedef enum MyEnumTag{ // index for the strings   
+    CURENT_LEYER = 0,
+}MyEnumTag;
 
-MapMaker* initMapMaker(char fileName[NAME],int tileSizeW,int tileSizeH,char romeName[NAME]);
+MapMaker* initMapMaker(char fileName[NAME],int tileSizeW,int tileSizeH,char romeName[NAME],SDL_Renderer *pRenderer);
 //initialize the map maker 
 
 bool isOnListofRom(char fileName[NAME],char romName[NAME],int *fileIndex);
