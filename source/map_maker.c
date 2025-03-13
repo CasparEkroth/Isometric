@@ -69,6 +69,7 @@ void maker(MapMaker *pMapMaker, Game *pGame,bool *isProgramRunnig){
     }
     for (int i = 0; i < DEPTH; i++) if(pMapMaker->pLayer[i]) free(pMapMaker->pLayer[i]);
     for (int i = 0; i < NR_OF_STRINGS; i++) if(pMapMaker->strings[i])SDL_DestroyTexture(pMapMaker->strings[i]);
+    if(pMapMaker->pFont) TTF_CloseFont(pMapMaker->pFont);
     free(pMapMaker);
 }
 
