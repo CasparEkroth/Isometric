@@ -32,7 +32,7 @@ Map *createMap(SDL_Renderer *pRenderer){
         return NULL;
     }
     strcpy(pMap->curentRoom,"start");
-    stpcpy(pMap->mapFile,"resources/map.txt");
+    strcpy(pMap->mapFile,"resources/map.txt");
 
     pMap->TILE_SIZE_H = ISO_TILE_SIZE;
     pMap->TILE_SIZE_W = ISO_TILE_SIZE;

@@ -2,7 +2,7 @@ start0
 ```ffcbbb`d````bbbbbbbbbbbb``d
 bfcffbb`bbbbbbba````bbbcbb``dd
 `fc`cccbccccbdb`b``cccbb`b```d
-bccccbcccbbcccca`d`cc`b``bbc`c
+`ccccbcccbbcccca`d`cc`b``bbc`c
 fcccbcbcccdc`ccabccbcbbcbbcbcc
 f`cbcbbbccddcccacbcbbcbbbcbcdc
 ```b`c`dddddccccbccccbbbbcbcdc
@@ -11,9 +11,9 @@ bccbb`cdddddc`ccbbccbbcbcccbdc
 c`c``cccccfccbbcccccccbccbcece
 bcccc`ccccfbc``bccccccb`ccced`
 bccccccbbbfbccc`ccccbbcccccce`
-ccbcbcbb`cccbcccgcccc`bccccce`
-fccccccbbccccbccccccc`bccccceg
-dcccccccbbc`ccccbccccbbcccccbg
+ccbcbcbb`cccbcccgcccc`bccccceh
+fccccccbbccccbccccccc`bccccceh
+dcccccccbbc`ccccbccccbbcccccbh
 ccbbbcbccccccccccbbcb`bccccccc
 `cdbbcccbcc`cccccccc``bcccbccc
 cccccbbcccc`bbccc``bcb``bc`cbc
