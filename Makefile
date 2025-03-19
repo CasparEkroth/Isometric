@@ -27,20 +27,22 @@ ifeq ($(OS), Darwin)
 #Saman satta fil namnet
     EXEC = Isometric 
 #sök väg för source filse från relevent phat
-	SRCDIR = source 
+	SRCDIR = source
 #remove comand
 	REMOV = rm -f *.o 
 # exequte operator
-	PREFORM = ./ 
+	PREFORM =./
 
 else ifeq ($(OS), Windows_NT)
     # --- Windows (MinGW/MSYS) Settings ---
     # Adjust these paths for your environment:
     CC = gcc
     # If your SDL2 is in C:/SDL2, for example:
-    INCLUDE=C:\msys64\mingw64\include
+    ####################  LADE TILL: \SDL2      !!
+    INCLUDE=C:\msys64\mingw64\include\SDL2
 	CFLAGS=-g -c -I$(INCLUDE)
-	LDFLAGS=-lmingw32 -lSDL2main -lSDL2 -lSDL2_image -mwindows
+    #################################### # LADE TILL: -lSDL2_ttf -lSDL2_mixer -lSDL2_net        !!
+	LDFLAGS= -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -lSDL2_ttf -lSDL2_mixer -lSDL2_net -mwindows 
     EXEC = Isometric.exe
 	SRCDIR = ./source
 	REMOV = del /f *.o
@@ -79,3 +81,5 @@ clean:
 # Run the program
 run:  
 	$(PREFORM)$(EXEC)
+
+
