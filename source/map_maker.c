@@ -18,6 +18,7 @@ MapMaker* initMapMaker(char fileName[NAME],int tileSizeW,int tileSizeH,char rome
     pMapMaker->isChosingNewTile = false;
     pMapMaker->isMakingMap = true;
     pMapMaker->isSavede = false;
+    pMapMaker->infoOpen = false;
     strcpy(pMapMaker->fileName,fileName);
     strcpy(pMapMaker->romeName,romeName);
 
@@ -31,6 +32,13 @@ MapMaker* initMapMaker(char fileName[NAME],int tileSizeW,int tileSizeH,char rome
     pMapMaker->mousePos = (SDL_Point){0,0};
     pMapMaker->ISOofSet = (SDL_Point){0,0};
     pMapMaker->stringPos[CURENT_LEYER]=(SDL_Rect){0,0,0,0};
+    pMapMaker->stringPos[INPUT_V]=(SDL_Rect){0,0,0,0};
+    pMapMaker->stringPos[INPUT_P]=(SDL_Rect){0,1,0,0};
+    pMapMaker->stringPos[INPUT_M]=(SDL_Rect){0,2,0,0};
+    pMapMaker->stringPos[INPUT_L]=(SDL_Rect){0,3,0,0};
+    pMapMaker->stringPos[INPUT_N]=(SDL_Rect){0,4,0,0};
+    pMapMaker->stringPos[INPUT_ENTER]=(SDL_Rect){0,5,0,0};
+    pMapMaker->stringPos[INPUT_ESCAPE]=(SDL_Rect){0,6,0,0};
     for (int i = 0; i < NR_OF_STRINGS; i++){
         pMapMaker->strings[i] = NULL; //for sefty
         pMapMaker->stringPos[i].h = ISO_TILE_SIZE;
@@ -39,6 +47,13 @@ MapMaker* initMapMaker(char fileName[NAME],int tileSizeW,int tileSizeH,char rome
     char tmp[NAME] = "LAYER";
     addIntToString(tmp,pMapMaker->selectedLayer);
     pMapMaker->strings[CURENT_LEYER] = textToScreen(tmp,pMapMaker->pFont,pRederer,&pMapMaker->stringPos[CURENT_LEYER]);
+    pMapMaker->strings[INPUT_V] = textToScreen("(V) make the selected tile void",pMapMaker->pFont,pRederer,&pMapMaker->stringPos[INPUT_V]);
+    pMapMaker->strings[INPUT_P] = textToScreen("(P) zoom in",pMapMaker->pFont,pRederer,&pMapMaker->stringPos[INPUT_P]);
+    pMapMaker->strings[INPUT_M] = textToScreen("(M) zoom out",pMapMaker->pFont,pRederer,&pMapMaker->stringPos[INPUT_M]);
+    pMapMaker->strings[INPUT_L] = textToScreen("(L) jumps to the next layer",pMapMaker->pFont,pRederer,&pMapMaker->stringPos[INPUT_L]);
+    pMapMaker->strings[INPUT_N] = textToScreen("(N) choose a new tile",pMapMaker->pFont,pRederer,&pMapMaker->stringPos[INPUT_N]);
+    pMapMaker->strings[INPUT_ENTER] = textToScreen("(ENTER) exit window",pMapMaker->pFont,pRederer,&pMapMaker->stringPos[INPUT_ENTER]);
+    pMapMaker->strings[INPUT_ESCAPE] = textToScreen("(ESCAPE) exit program",pMapMaker->pFont,pRederer,&pMapMaker->stringPos[INPUT_ESCAPE]);
     return pMapMaker;
 } 
 
@@ -58,6 +73,7 @@ void maker(MapMaker *pMapMaker, Game *pGame,bool *isProgramRunnig){
     }
     for (int i = 0; i < DEPTH; i++) if(pMapMaker->pLayer[i]) free(pMapMaker->pLayer[i]);
     for (int i = 0; i < NR_OF_STRINGS; i++) if(pMapMaker->strings[i])SDL_DestroyTexture(pMapMaker->strings[i]);
+    if(pMapMaker->pFont) TTF_CloseFont(pMapMaker->pFont);
     free(pMapMaker);
 }
 
@@ -85,6 +101,10 @@ void maker_render(SDL_Renderer *pRenderer,MapMaker *pMapMaker,Map *pMap,SDL_Even
         //##########################
         //### välja lager // selsectetLayer
         //##########################
+    }else if(pMapMaker->infoOpen){
+        for (int i = 1; i < NR_OF_STRINGS; i++){
+            SDL_RenderCopy(pRenderer,pMapMaker->strings[i],NULL,&pMapMaker->stringPos[i]);
+        }
     }else{
         for (int i = 0; i < DEPTH; i++){
             renderMap(pRenderer,pMapMaker->pLayer[i]->tileMap,
@@ -153,16 +173,13 @@ void maker_input(MapMaker *pMapMaker,SDL_Event event,bool *isProgramRunnig,Game 
     static int ode = 0;
     for (int y = 0; y < NUMMBER_OF_TILSE_Y; y++){
         for (int x = 0; x < NUMMBER_OF_TILSE_X; x++){
-            //if(++ode%2==1){
-                SDL_Rect tileBox = pMapMaker->pLayer[pMapMaker->selectedLayer]->tileRect[y][x];
-                // Instead of halving tileBox.h, do a diamond test:
-                if (inDiamond(tileBox, mouse)) {
-                    // That means we clicked inside tile (x,y)
-                    pMapMaker->highlight_rect.x = x;
-                    pMapMaker->highlight_rect.y = y;
-                }
-            //}
-            
+            SDL_Rect tileBox = pMapMaker->pLayer[pMapMaker->selectedLayer]->tileRect[y][x];
+            // Instead of halving tileBox.h, do a diamond test:
+            if (inDiamond(tileBox, mouse)){
+                // That means we clicked inside tile (x,y)
+                pMapMaker->highlight_rect.x = x;
+                pMapMaker->highlight_rect.y = y;
+            }            
         }
     }
     if(mouseState)pMapMaker->pLayer[pMapMaker->selectedLayer]->
@@ -177,10 +194,14 @@ void maker_input(MapMaker *pMapMaker,SDL_Event event,bool *isProgramRunnig,Game 
     if(pMapMaker->keys[SDL_SCANCODE_LEFT]) pMapMaker->mapOfset.x = SPEED;
     if(pMapMaker->keys[SDL_SCANCODE_RIGHT]) pMapMaker->mapOfset.x -= SPEED;
     if(pMapMaker->keys[SDL_SCANCODE_N]) pMapMaker->isChosingNewTile = true;
-    if(pMapMaker->keys[SDL_SCANCODE_RETURN]) pMapMaker->isChosingNewTile = false;
+    if(pMapMaker->keys[SDL_SCANCODE_RETURN]){
+        pMapMaker->isChosingNewTile = false;
+        pMapMaker->infoOpen = false;
+    } 
     if(pMapMaker->keys[SDL_SCANCODE_V]) pMapMaker->selectedTile = ('a'-1);
     if(pMapMaker->keys[SDL_SCANCODE_P]) pMapMaker->zoom = -1; 
     if(pMapMaker->keys[SDL_SCANCODE_M]) pMapMaker->zoom = 1; 
+    /*
     if(pMapMaker->keys[SDL_SCANCODE_P]){
         if (SDL_GetWindowFlags(pGame->pWindow) & SDL_WINDOW_FULLSCREEN){
             SDL_SetWindowFullscreen(pGame->pWindow, 0);  // Switch back to windowed mode
@@ -188,13 +209,14 @@ void maker_input(MapMaker *pMapMaker,SDL_Event event,bool *isProgramRunnig,Game 
             SDL_SetWindowFullscreen(pGame->pWindow, SDL_WINDOW_FULLSCREEN);  // Fullscreen mode
         }
         resizeWindow(pMapMaker,pGame->pMap,pGame->pWindow);
-    }
+    }*/
     if(pMapMaker->keys[SDL_SCANCODE_L]){
         pMapMaker->selectedLayer = (++pMapMaker->selectedLayer)%DEPTH;
         char tmp[NAME] = "LAYER";
         addIntToString(tmp,pMapMaker->selectedLayer);
         pMapMaker->strings[CURENT_LEYER] = makeStringInToSDL_Texture(tmp,pMapMaker->pFont,pGame->pRenderer);
     } 
+    if(pMapMaker->keys[SDL_SCANCODE_I]) pMapMaker->infoOpen = true;
 }
 
 //added changes so that the isometric levels are also saved
