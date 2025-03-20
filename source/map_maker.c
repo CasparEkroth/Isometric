@@ -2,7 +2,7 @@
 //input 
 //render 
 //seving to file                                                                                //ta bort
-MapMaker* initMapMaker(char fileName[NAME],int tileSizeW,int tileSizeH,char romeName[NAME],SDL_Renderer *pRederer){
+MapMaker* initMapMaker(char fileName[NAME],char romeName[NAME],SDL_Renderer *pRederer){
     MapMaker* pMapMaker = malloc(sizeof(MapMaker));
     if(!pMapMaker){
         fprintf(stderr,"Erorr alocating memory for MapMaker\n");
@@ -14,11 +14,11 @@ MapMaker* initMapMaker(char fileName[NAME],int tileSizeW,int tileSizeH,char rome
         fprintf(stderr,"Erorr opening font for MapMaker: %s",TTF_GetError());
         return NULL;
     }
-    char buffer[NAME]; 
     pMapMaker->isChosingNewTile = false;
     pMapMaker->isMakingMap = true;
     pMapMaker->isSavede = false;
     pMapMaker->infoOpen = false;
+    memset(pMapMaker->keys, 0, sizeof(pMapMaker->keys));
     strcpy(pMapMaker->fileName,fileName);
     strcpy(pMapMaker->romeName,romeName);
 
@@ -64,7 +64,7 @@ void maker(MapMaker *pMapMaker, Game *pGame,bool *isProgramRunnig){
             maker_input(pMapMaker,event,isProgramRunnig,pGame);
         }
         maker_update(pMapMaker,pGame->pWindow);
-        maker_render(pGame->pRenderer,pMapMaker,pGame->pMap,event);
+        maker_render(pGame->pRenderer,pMapMaker,pGame->pMap);
     }
     for (int i = 0; i < DEPTH; i++){
         if(pMapMaker->fileIdex[i] == 0) pMapMaker->fileIdex[i] = i*NUMMBER_OF_TILSE_Y+i;
@@ -77,7 +77,7 @@ void maker(MapMaker *pMapMaker, Game *pGame,bool *isProgramRunnig){
     free(pMapMaker);
 }
 
-void maker_render(SDL_Renderer *pRenderer,MapMaker *pMapMaker,Map *pMap,SDL_Event event){
+void maker_render(SDL_Renderer *pRenderer,MapMaker *pMapMaker,Map *pMap){
     SDL_RenderClear(pRenderer);
     Uint32 mouseState = SDL_GetMouseState(&pMapMaker->mousePos.x,&pMapMaker->mousePos.y);
     if(pMapMaker->isChosingNewTile){
@@ -156,10 +156,10 @@ void maker_input(MapMaker *pMapMaker,SDL_Event event,bool *isProgramRunnig,Game 
         *isProgramRunnig = false;
         break;
     case SDL_MOUSEBUTTONDOWN:
-        pMapMaker->keys[event.button.state] = SDL_PRESSED;
+        pMapMaker->keys[event.button.button] = SDL_PRESSED;
         break;
     case SDL_MOUSEBUTTONUP:
-        pMapMaker->keys[event.button.state] = SDL_RELEASED;
+        pMapMaker->keys[event.button.button] = SDL_RELEASED;
         break;
     case SDL_KEYDOWN:
         pMapMaker->keys[event.key.keysym.scancode] = true;
@@ -170,7 +170,6 @@ void maker_input(MapMaker *pMapMaker,SDL_Event event,bool *isProgramRunnig,Game 
     default:
         break;
     }
-    static int ode = 0;
     for (int y = 0; y < NUMMBER_OF_TILSE_Y; y++){
         for (int x = 0; x < NUMMBER_OF_TILSE_X; x++){
             SDL_Rect tileBox = pMapMaker->pLayer[pMapMaker->selectedLayer]->tileRect[y][x];
@@ -268,7 +267,7 @@ void saveMademap(char fileName[],int fileIdex,char roomNameL[],char map[][NUMMBE
 
 bool isOnListofRom(char fileName[NAME],char romName[NAME],int *fileIndex){
     char buffer[256];
-    int contRom = 0,line = 0;
+    int line = 0;
     FILE *fp = fopen(fileName, "r");
     if (fp == NULL) {
         fprintf(stderr,"Error: Clude not open %s!\n",fileName);

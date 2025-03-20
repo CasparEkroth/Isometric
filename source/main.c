@@ -5,15 +5,17 @@ void removing(Game *pGame);
 void initGame(Game *pGame);
 
 int main(int argc, char **argv){
+    (void)argc;
+    (void)argv;
     Game g = {0};
 
-    SDL_Event event;
+    SDL_Event event = {0};
     initGame(&g);
     for (int i = 0; i < DEPTH; i++) printMap(g.pMap->pTrueMap[i]->tileMap);
     while (g.programIsRunning){
         gameCycel(&g,event);
         if(g.isMakingMap){
-            MapMaker *m = initMapMaker("resources/map.txt",g.pMap->TILE_SIZE_W,g.pMap->TILE_SIZE_H,"start",g.pRenderer);
+            MapMaker *m = initMapMaker("resources/map.txt","start",g.pRenderer);
             for (int i = 0; i < DEPTH; i++) m->pLayer[i] = createLayerOfMap(i,g.pMap->curentRoom,g.pMap->mapFile);
             for (int i = 0; i < DEPTH; i++)if(isOnListofRom(m->fileName,m->pLayer[i]->roomLayerName,&m->fileIdex[i])){}
 

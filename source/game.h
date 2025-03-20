@@ -11,7 +11,6 @@ typedef struct{
     bool programIsRunning,isMakingMap;
 }Game;
 
-void update(Game *pGame);
 void input(SDL_Event event,Game* pGame);
 void render(Game *pGame);
 

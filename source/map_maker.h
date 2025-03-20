@@ -36,7 +36,7 @@ typedef enum MyEnumTag{ // index for the strings
     INPUT_ESCAPE =7,
 }MyEnumTag;
 
-MapMaker* initMapMaker(char fileName[NAME],int tileSizeW,int tileSizeH,char romeName[NAME],SDL_Renderer *pRenderer);
+MapMaker* initMapMaker(char fileName[NAME],char romeName[NAME],SDL_Renderer *pRenderer);
 //initialize the map maker 
 
 bool isOnListofRom(char fileName[NAME],char romName[NAME],int *fileIndex);
@@ -52,7 +52,7 @@ void maker_input(MapMaker *pMapMaker,SDL_Event event,bool *isProgramRunnig,Game 
 void maker_update(MapMaker *pMapMaker,SDL_Window *pWindow);
 // only movs the map
 
-void maker_render(SDL_Renderer *pRendererer,MapMaker *pMapMaker,Map *pMap,SDL_Event event);
+void maker_render(SDL_Renderer *pRendererer,MapMaker *pMapMaker,Map *pMap);
 //render
 
 //void saveMademap(MapMaker *pMapMaker);

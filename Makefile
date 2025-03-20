@@ -11,7 +11,7 @@ ifeq ($(OS), Darwin)
     # --- macOS Settings ---
     # Variables for compiler and flags
     CC = clang
-    CFLAGS = -fsanitize=address -g -c \
+    CFLAGS = -fsanitize=address -fsanitize=undefined -g -c -Wall -Wextra \
              -I/opt/homebrew/include/SDL2 \
              -I/opt/homebrew/include/SDL2_image \
              -I/opt/homebrew/include/SDL2_ttf \

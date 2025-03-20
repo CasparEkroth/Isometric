@@ -19,10 +19,6 @@ void input(SDL_Event event,Game* pGame){
     if(pGame->keys[SDL_SCANCODE_F]) pGame->isMakingMap = true;
 }
 
-void update(Game *pGame){
-
-}
-
 void render(Game *pGame){
     SDL_RenderClear(pGame->pRenderer);
     for (int i = 0; i < DEPTH; i++){
@@ -34,6 +30,6 @@ void render(Game *pGame){
 
 void gameCycel(Game *pGame,SDL_Event event){
     input(event,pGame);
-    update(pGame);
+    //update(pGame); not in use
     render(pGame);
 }
