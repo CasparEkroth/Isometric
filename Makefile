@@ -46,7 +46,7 @@ else ifeq ($(OS), Windows_NT)
     EXEC = Isometric.exe
 	SRCDIR = ./source
 	REMOV = del /f *.o
-	PREFORM = .\
+	PREFORM = ./
 
 endif
 
