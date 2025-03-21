@@ -31,7 +31,7 @@ ifeq ($(OS), Darwin)
 #remove comand
 	REMOV = rm -f *.o 
 # exequte operator
-	PREFORM =./
+	PREFORM =MallocNanoZone=0 ./
 
 else ifeq ($(OS), Windows_NT)
     # --- Windows (MinGW/MSYS) Settings ---
